@@ -6,6 +6,8 @@ import { useState } from "react";
 import "./styles.css";
 import LoginForm from "../components/forms/LoginForm/LoginForm";
 import { FormattedMessage } from "react-intl";
+import Divider from '@mui/material/Divider';
+
 
 export default function Login() {
   const [error, setError] = useState<string | null>(null);
@@ -34,8 +36,8 @@ export default function Login() {
   };
 
   return (
-    <div className="mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-6">Login</h1>
+    <main className="flex flex-col items-center gap-4 w-175">
+      <h1 className="text-2xl font-bold mb-6"><FormattedMessage id={"login.title"} /></h1>
 
       {error && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
@@ -43,7 +45,7 @@ export default function Login() {
         </div>
       )}
 
-      <main className="flex border">
+      <article className={`flex justify-${isCreating ? 'between' : 'center'} border border-[#4d7c0f]/50 rounded`}>
         <LoginForm
           {...isDisabled()}
           formattedMessageCardTitle="login.haveAccount"
@@ -63,27 +65,32 @@ export default function Login() {
           </p>
         </LoginForm>
 
+        
+
         {isCreating && (
-          <LoginForm
-            formattedMessageCardTitle="login.createAccount"
-            action={handleCreateAccount}
-            isCreating
-          >
-            <div className="input-control-button">
-              <Button variant="primary" type="submit">
-                <FormattedMessage id={"login.createAccountButton"} />
-              </Button>
-              <Button
-                variant="secondary"
-                type="button"
-                onClick={() => setIsCreating(false)}
-              >
-                <FormattedMessage id={"login.cancel"} />
-              </Button>
-            </div>
-          </LoginForm>
+          <>
+            <Divider orientation="vertical"  className="bg-[#4d7c0f] h-[80%]" />
+            <LoginForm
+              formattedMessageCardTitle="login.createAccount"
+              action={handleCreateAccount}
+              isCreating
+            >
+              <div className="input-control-button">
+                <Button variant="primary" type="submit">
+                  <FormattedMessage id={"login.createAccountButton"} />
+                </Button>
+                <Button
+                  variant="secondary"
+                  type="button"
+                  onClick={() => setIsCreating(false)}
+                >
+                  <FormattedMessage id={"login.cancel"} />
+                </Button>
+              </div>
+            </LoginForm>
+          </>
         )}
-      </main>
-    </div>
+      </article>
+    </main>
   );
 }

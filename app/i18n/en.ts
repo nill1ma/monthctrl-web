@@ -1,9 +1,7 @@
-// app/i18n/en.ts
 export const en = {
-  // Login
   "login.title": "Login",
   "login.email": "Email",
-  "login.emailPlaceholder": "user@example.com", // Fix the typo
+  "login.emailPlaceholder": "user@example.com",
   "login.password": "Password",
   "login.passwordPlaceholder": "••••••••",
   "login.loginButton": "Login",
@@ -29,8 +27,6 @@ export const en = {
   "update.title.expenses": "Edit Expense",
   
 
-
-  // Details
   "details.reference": "Reference {reference}",
   "details.incomings": "Incomings",
   "details.expenses": "Expenses",

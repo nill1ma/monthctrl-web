@@ -32,5 +32,9 @@
 }
 
 .title {
-  @apply p-5 bg-[#a3e635] text-[#1a1a1a] font-black my-2;
+  @apply p-5 bg-[#a3e635] text-[#1a1a1a] font-black my-2 flex justify-center;
+}
+
+input[type="month"] {
+  color-scheme: dark; /* Isso fará o ícone ficar claro em fundo escuro */
 }

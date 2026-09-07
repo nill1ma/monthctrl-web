@@ -15,6 +15,7 @@ export function useExpenses(reference?: string, id?: string) {
       mutationKey: ['create-expense'],
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ['expenses'] });
+        queryClient.invalidateQueries({ queryKey: ['incomings-expenses-transactions'] });
       },
     });
 
@@ -29,6 +30,7 @@ export function useExpenses(reference?: string, id?: string) {
         mutationKey: ['update-expense'],
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: ['expenses'] });
+          queryClient.invalidateQueries({ queryKey: ['incomings-expenses-transactions'] });
         },
       });
 
@@ -37,6 +39,7 @@ export function useExpenses(reference?: string, id?: string) {
     mutationKey: ['delete-expense'],
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['expenses'] });
+      queryClient.invalidateQueries({ queryKey: ['incomings-expenses-transactions'] });
     },
   });
 

@@ -21,6 +21,7 @@ export function useIncomings(reference?: string, id?: string) {
     mutationKey: ['create-incoming'],
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['incomings'] });
+      queryClient.invalidateQueries({ queryKey: ['incomings-expenses-transactions'] });
     },
   });
 
@@ -29,6 +30,7 @@ const { mutate: updateMutation, isPending: isUpdating } = useMutation({
     mutationKey: ['update-incoming'],
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['incomings'] });
+      queryClient.invalidateQueries({ queryKey: ['incomings-expenses-transactions'] });
     },
   });
 
@@ -37,6 +39,7 @@ const { mutate: updateMutation, isPending: isUpdating } = useMutation({
     mutationKey: ['delete-incoming'],
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['incomings'] });
+      queryClient.invalidateQueries({ queryKey: ['incomings-expenses-transactions'] });
     },
   });
 
