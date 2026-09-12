@@ -15,24 +15,31 @@ export default function BarChartComponent({
 }: BarChartProps) {
   return (
     <BarChart
-      xAxis={[
-        {
-          id,
-          data: dataAxis,
-          height: 8,
-          colorMap: {
-            type: 'continuous',
-            color: ['white', 'green'],
-          },
+    yAxis={[
+      {
+        tickLabelStyle: { fill: '#ffffff' },
+      },
+    ]}
+    xAxis={[
+      {
+        id,
+        data: dataAxis,
+        height: 10,
+        tickLabelStyle: { fill: '#ffffff' },
+        colorMap: {
+          type: 'continuous',
+          color: ['#a3e635', '#a3e635'],
         },
-      ]}
-      series={[
-        {
-          data,
-        },
-      ]}
-      height={300}
-      className={`${className}`}
+      },
+    ]}
+    series={[
+      {
+        data,
+      },
+    ]}
+    width={700}
+    height={250}
+    className={`${className}`}
     />
   );
 }

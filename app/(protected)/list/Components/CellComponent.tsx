@@ -1,6 +1,6 @@
 import * as Table  from "@/app/components/ui/table/Table";
 import { IncomingsExpensesTransaction } from "@/app/services//incomings_expenses_transactions/incomings_expenses_transactions.types";
-import ReferenceDate from "../../details/[reference]/ReferenceDate";
+import ReferenceDate from "../../../components/referenceDate/ReferenceDate";
 
 export default function CellContent ({ column, item, className }: { column: { key: string; label: string }; item: IncomingsExpensesTransaction; className?: string }) {
     return <Table.TableCell key={column.key} className={className}>

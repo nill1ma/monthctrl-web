@@ -1,16 +1,18 @@
 "use client";
 
 import { ExpenseForm, IncomingForm } from "@/app/components/forms";
+import { ArrowCircleLeft } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { FormattedMessage } from "react-intl";
+import { FormattedMessage, useIntl } from "react-intl";
+import { Tooltip } from "@mui/material";
 import "./styles.css";
 
 type TransactionType = "incomings" | "expenses";
 
 interface TransactionFormPageProps {
   mode: "create" | "edit";
-  type?: TransactionType;   // obrigatório no edit; ignorado no create
+  type?: TransactionType; // obrigatório no edit; ignorado no create
   id?: string;
   initialData?: Record<string, unknown>;
   redirectTo?: string;
@@ -23,6 +25,7 @@ export default function TransactionFormPage({
   initialData,
   redirectTo = "/list",
 }: TransactionFormPageProps) {
+  const { formatMessage } = useIntl();
   const [controlTab, setControlTab] = useState<TransactionType>("incomings");
   const router = useRouter();
 
@@ -34,18 +37,24 @@ export default function TransactionFormPage({
   };
 
   const titleId = {
-  create: {
-    incomings: "create.title.incomings",
-    expenses: "create.title.expenses",
-  },
-  edit: {
-    incomings: "update.title.incomings",
-    expenses: "update.title.expenses",
-  },
-}[mode][activeType];
+    create: {
+      incomings: "create.title.incomings",
+      expenses: "create.title.expenses",
+    },
+    edit: {
+      incomings: "update.title.incomings",
+      expenses: "update.title.expenses",
+    },
+  }[mode][activeType];
 
   return (
     <>
+      <Tooltip title={`${formatMessage({ id: "create.update.goToPrevious.button.tooltip" })}`} arrow placement="top">
+        <ArrowCircleLeft
+          className="cursor-pointer mb-0.5"
+          onClick={() => router.back()}
+        />
+      </Tooltip>
       {mode === "create" && (
         <nav>
           <ul className="tabs">
@@ -66,15 +75,29 @@ export default function TransactionFormPage({
       )}
 
       <h1 className="title">
-        <FormattedMessage
-          id={titleId}
-        />
+        <FormattedMessage id={titleId} />
       </h1>
 
       {activeType === "incomings" ? (
-        <IncomingForm id={id} defaultValues={initialData as { value: number; reference: string; origin: string }} onSuccess={handleSuccess} />
+        <IncomingForm
+          id={id}
+          defaultValues={
+            initialData as { value: number; reference: string; origin: string }
+          }
+          onSuccess={handleSuccess}
+        />
       ) : (
-        <ExpenseForm id={id} defaultValues={initialData as { destination: string; value: number; reference: string }} onSuccess={handleSuccess} />
+        <ExpenseForm
+          id={id}
+          defaultValues={
+            initialData as {
+              destination: string;
+              value: number;
+              reference: string;
+            }
+          }
+          onSuccess={handleSuccess}
+        />
       )}
     </>
   );

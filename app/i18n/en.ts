@@ -21,6 +21,7 @@ export const en = {
   "create.update.submit": "Submit",
   "create.update.tab.incomings": "Incomings",
   "create.update.tab.expenses": "Expenses",
+  "create.update.goToPrevious.button.tooltip":"Go to previous page",
   "create.title.incomings": "Create Incoming",
   "create.title.expenses": "Create Expense",
   "update.title.incomings": "Edit Incoming",
@@ -30,4 +31,9 @@ export const en = {
   "details.reference": "Reference {reference}",
   "details.incomings": "Incomings",
   "details.expenses": "Expenses",
+  "details.edit.incoming.tooltip": "Edit incoming",
+  "details.edit.expense.tooltip": "Edit expense",
+  "details.delete.incoming.tooltip": "Delete incoming",
+  "details.delete.expense.tooltip": "Delete expense",
+  "details.goBack.button.tooltip": "Go to list page",
 };

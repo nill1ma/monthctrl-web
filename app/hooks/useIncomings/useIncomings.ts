@@ -5,7 +5,7 @@ export function useIncomings(reference?: string, id?: string) {
   const queryClient = useQueryClient();
 
   const { data, isLoading } = useQuery({
-    queryKey: ['incomings'],
+    queryKey: ['incomings', reference],
     queryFn: () => getIncomingByReference(reference!),
     enabled: !!reference,
   });

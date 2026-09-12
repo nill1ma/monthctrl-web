@@ -5,7 +5,7 @@ export function useExpenses(reference?: string, id?: string) {
   const queryClient = useQueryClient();
 
   const { data, isLoading } = useQuery({
-    queryKey: ['expenses'],
+    queryKey: ['expenses', reference],
     queryFn: () => getExpenseByReference(reference!),
     enabled: !!reference,
   });
