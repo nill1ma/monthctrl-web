@@ -2,7 +2,6 @@
 
 import { Tooltip } from '@mui/material';
 import './styles.css'
-import {Fragment} from 'react'
 type CardItemProps = {
   label: string;
   value: string | number;

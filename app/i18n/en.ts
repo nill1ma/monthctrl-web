@@ -1,4 +1,4 @@
-export const en = {
+export const en: Record<string, string> = {
   "login.title": "Login",
   "login.email": "Email",
   "login.emailPlaceholder": "user@example.com",
@@ -26,7 +26,7 @@ export const en = {
   "create.title.expenses": "Create Expense",
   "update.title.incomings": "Edit Incoming",
   "update.title.expenses": "Edit Expense",
-  
+
 
   "details.reference": "Reference {reference}",
   "details.incomings": "Incomings",

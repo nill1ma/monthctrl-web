@@ -1,8 +1,8 @@
 import { IntlProvider } from "react-intl";
 import { en } from "./en";
 
-const messages: Record<string, any> = {
-  en,
+const messages: Record<string, Record<string, string>> = {
+  en: en as Record<string, string>,
 };
 
 export default function I18nProvider({ children, locale = "en" }: { children: React.ReactNode; locale?: string }) {
