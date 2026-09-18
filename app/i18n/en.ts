@@ -21,6 +21,7 @@ export const en: Record<string, string> = {
   "create.update.submit": "Submit",
   "create.update.tab.incomings": "Incomings",
   "create.update.tab.expenses": "Expenses",
+  "create.update.goToPrevious.button":"Go back",
   "create.update.goToPrevious.button.tooltip":"Go to previous page",
   "create.title.incomings": "Create Incoming",
   "create.title.expenses": "Create Expense",
@@ -35,5 +36,6 @@ export const en: Record<string, string> = {
   "details.edit.expense.tooltip": "Edit expense",
   "details.delete.incoming.tooltip": "Delete incoming",
   "details.delete.expense.tooltip": "Delete expense",
+  "details.goBack.button": "Go to list",
   "details.goBack.button.tooltip": "Go to list page",
 };

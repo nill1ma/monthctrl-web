@@ -16,7 +16,7 @@ export function useIncomings(reference?: string, id?: string) {
     enabled: !!id,
   });
 
-  const { mutate: createMutation, isPending: isCreating } = useMutation({
+  const { mutateAsync: createMutation, isPending: isCreating } = useMutation({
     mutationFn: createIncoming,
     mutationKey: ['create-incoming'],
     onSuccess: () => {
@@ -25,7 +25,7 @@ export function useIncomings(reference?: string, id?: string) {
     },
   });
 
-const { mutate: updateMutation, isPending: isUpdating } = useMutation({
+const { mutateAsync: updateMutation, isPending: isUpdating } = useMutation({
     mutationFn: updateIncoming,
     mutationKey: ['update-incoming'],
     onSuccess: () => {

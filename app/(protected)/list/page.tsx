@@ -3,6 +3,8 @@
 import Loading from "@/app/components/loading/loading";
 import * as Table from "@/app/components/ui/table/Table";
 import { useIncomingsExpensesTransactionsList } from "@/app/hooks/useIncomingsExpensesTransactionsList/useIncomingsExpensesTransactionsList";
+import { DownloadingSharp } from "@mui/icons-material";
+import { Tooltip } from "@mui/material";
 import { redirect } from "next/navigation";
 import CellContent from "./Components/CellComponent";
 import "./styles.css";
@@ -13,6 +15,7 @@ export default function List() {
     { key: "incoming_value", label: "Incomings" },
     { key: "expense_value", label: "Expenses" },
     { key: "net_income", label: "Net Income" },
+    { key: "actions", label: "Actions" },
   ];
 
   const { data: dataIncomingsExpenses, isLoading } = useIncomingsExpensesTransactionsList();
@@ -49,12 +52,20 @@ export default function List() {
               className="table-row"
             >
               {columns.map((column) => (
-                <CellContent
-                  column={column}
-                  item={item}
-                  className="table-cell"
-                  key={column.key}
-                />
+                column.key === 'actions' ? (
+                  <Table.TableCell key="actions" className="table-cell">
+                    <Tooltip title={`Download ${item.reference}`} arrow placement="top">
+                      <DownloadingSharp />
+                    </Tooltip>
+                  </Table.TableCell>
+                ) : (
+                  <CellContent
+                    column={column}
+                    item={item}
+                    className="table-cell"
+                    key={column.key}
+                  />
+                )
               ))}
             </Table.TableRow>
           ))}

@@ -14,6 +14,7 @@ import { Tooltip } from "@mui/material";
 import { ArrowCircleLeft } from "@mui/icons-material";
 import { useIntl } from "react-intl";
 import { useRouter } from "next/navigation";
+import Button from "@/app/components/ui/Button/Button";
 
 export default function Details() {
   const params = useParams();
@@ -32,12 +33,12 @@ export default function Details() {
   return (
     <>
     <Tooltip title={`${formatMessage({ id: "details.goBack.button.tooltip" })}`} arrow placement="top">
-      <ArrowCircleLeft
-        height={50}
-        width={50}
-        className="cursor-pointer mb-0.5"
-        onClick={() => router.push("/list")}
-      />
+      <Button onClick={() => router.push("/list")} className="border w-auto! flex gap-1 bg-[#1a1a1a]! mb-2">
+        <ArrowCircleLeft
+          className="cursor-pointer"
+        />
+        <FormattedMessage id="details.goBack.button" />
+      </Button>
     </Tooltip>
       <h3>
         <ReferenceDate reference={reference} />

@@ -49,6 +49,7 @@ export async function createIncoming(
   const supabase = await createClient()
 
   const { data: { user }, error: authError } = await supabase.auth.getUser()
+  console.log('[createIncoming]', 'user:', user?.id ?? 'NENHUM', '| authError:', authError?.message)
   if (authError || !user) throw new Error("Usuário não autenticado")
 
   const { data, error } = await supabase

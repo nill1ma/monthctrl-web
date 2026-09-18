@@ -7,6 +7,7 @@ import { useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import { Tooltip } from "@mui/material";
 import "./styles.css";
+import Button from "../ui/Button/Button";
 
 type TransactionType = "incomings" | "expenses";
 
@@ -29,7 +30,6 @@ export default function TransactionFormPage({
   const [controlTab, setControlTab] = useState<TransactionType>("incomings");
   const router = useRouter();
 
-  // No create, quem manda é a aba clicada. No edit, quem manda é o type que veio por prop.
   const activeType = mode === "create" ? controlTab : type!;
 
   const handleSuccess = () => {
@@ -50,10 +50,12 @@ export default function TransactionFormPage({
   return (
     <>
       <Tooltip title={`${formatMessage({ id: "create.update.goToPrevious.button.tooltip" })}`} arrow placement="top">
-        <ArrowCircleLeft
-          className="cursor-pointer mb-0.5"
-          onClick={() => router.back()}
-        />
+        <Button onClick={() => router.back()} className="border w-auto! flex gap-1 bg-[#1a1a1a]! mb-2">
+          <ArrowCircleLeft
+            className="cursor-pointer"
+          />
+          <FormattedMessage id="create.update.goToPrevious.button" />
+        </Button>
       </Tooltip>
       {mode === "create" && (
         <nav>

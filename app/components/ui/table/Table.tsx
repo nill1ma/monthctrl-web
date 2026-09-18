@@ -1,22 +1,25 @@
 
 import './styles.css';
+import * as AwakeUITable from '@developmentsnil/awake-ui/table'
+
+
 
 export function Table({ children, className }: { children: React.ReactNode; className?: string }) {
-  return <table className={`table ${className || ''}`}>{children}</table>;
+  return <AwakeUITable.Root className={`table ${className || ''}`}>{children}</AwakeUITable.Root>;
 }
 
 export function TableHeader({ children, className }: { children: React.ReactNode; className?: string }) {
-  return <thead className={`${className || ''}`}>{children}</thead>;
+  return <AwakeUITable.Head className={`${className || ''}`}>{children}</AwakeUITable.Head>;
 }
 
 export function TableBody({ children, className }: { children: React.ReactNode; className?: string }) {
-  return <tbody className={`${className || ''}`}>{children}</tbody>;
+  return <AwakeUITable.Body className={`${className || ''}`}>{children}</AwakeUITable.Body>;
 }
 
 export function TableRow({ children, className, onClick, onMouseEnter, onMouseLeave }: { children: React.ReactNode; className?: string; onClick?: () => void; onMouseEnter?: () => void; onMouseLeave?: () => void }) {
-  return <tr onClick={onClick} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave} className={`${className || ''}`}>{children}</tr>;
+  return <AwakeUITable.Row onClick={onClick} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave} className={`${className || ''}`}>{children}</AwakeUITable.Row>;
 }
 
 export function TableCell({ children, className }: { children: React.ReactNode; className?: string }) {
-  return <td className={`table-cell ${className || ''}`}>{children}</td>;
+  return <AwakeUITable.Cell className={`table-cell ${className || ''}`}>{children}</AwakeUITable.Cell>;
 }
