@@ -1,13 +1,17 @@
 "use client";
 
 import Loading from "@/app/components/loading/loading";
-import * as Table from "@/app/components/ui/table/Table";
+import { Table, TableBody, TableCell, TableHeader, TableRow, TableHeaderCell } from "@/app/components/ui/table/Table";
 import { useIncomingsExpensesTransactionsList } from "@/app/hooks/useIncomingsExpensesTransactionsList/useIncomingsExpensesTransactionsList";
 import { DownloadingSharp } from "@mui/icons-material";
 import { Tooltip } from "@mui/material";
 import { redirect } from "next/navigation";
 import CellContent from "./Components/CellComponent";
 import "./styles.css";
+import Pagination from "@/app/components/ui/Pagination/Pagination";
+import { useState } from "react";
+
+const PAGE_SIZE = 2; // precisa bater com o PAGE_SIZE do service
 
 export default function List() {
   const columns = [
@@ -18,13 +22,14 @@ export default function List() {
     { key: "actions", label: "Actions" },
   ];
 
-  const { data: dataIncomingsExpenses, isLoading } = useIncomingsExpensesTransactionsList();
+  const [currentPage, setCurrentPage] = useState(1);
+  const { data: dataIncomingsExpenses, isLoading } = useIncomingsExpensesTransactionsList(currentPage);
 
   if (isLoading) {
     return <Loading />;
   }
 
-  if (dataIncomingsExpenses && dataIncomingsExpenses.length === 0) {
+  if (dataIncomingsExpenses && dataIncomingsExpenses.totalElements === 0) {
     return (
       <div className="flex items-center justify-center h-full">
         No data
@@ -32,32 +37,34 @@ export default function List() {
     );
   }
 
+  const totalPages = Math.ceil((dataIncomingsExpenses?.totalElements ?? 0) / PAGE_SIZE);
+
   return (
     <>
-      <Table.Table className="table">
-        <Table.TableHeader className="table-header">
-          <Table.TableRow className="table-row">
+      <Table className="table">
+        <TableHeader className="table-header">
+          <TableRow className="table-row">
             {columns.map((column) => (
-              <Table.TableCell key={column.key} className="table-cell">
+              <TableHeaderCell key={column.key} className="table-cell">
                 {column.label}
-              </Table.TableCell>
+              </TableHeaderCell>
             ))}
-          </Table.TableRow>
-        </Table.TableHeader>
-        <Table.TableBody>
-          {dataIncomingsExpenses?.map((item) => (
-            <Table.TableRow
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {dataIncomingsExpenses?.data?.map((item) => (
+            <TableRow
               onClick={() => redirect(`/details/${encodeURIComponent(item.reference)}`)}
-              key={item.id}
+              key={item.reference}
               className="table-row"
             >
               {columns.map((column) => (
                 column.key === 'actions' ? (
-                  <Table.TableCell key="actions" className="table-cell">
+                  <TableCell key="actions" className="table-cell">
                     <Tooltip title={`Download ${item.reference}`} arrow placement="top">
                       <DownloadingSharp />
                     </Tooltip>
-                  </Table.TableCell>
+                  </TableCell>
                 ) : (
                   <CellContent
                     column={column}
@@ -67,10 +74,15 @@ export default function List() {
                   />
                 )
               ))}
-            </Table.TableRow>
+            </TableRow>
           ))}
-        </Table.TableBody>
-      </Table.Table>
+        </TableBody>
+      </Table>
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={(newPage) => setCurrentPage(newPage)}
+      />
     </>
   );
 }

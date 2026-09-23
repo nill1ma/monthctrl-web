@@ -1,13 +1,13 @@
 "use client";
 
 import { ExpenseForm, IncomingForm } from "@/app/components/forms";
+import { Button } from "@developmentsnil/awake-ui/button";
 import { ArrowCircleLeft } from "@mui/icons-material";
+import { Tooltip } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
-import { Tooltip } from "@mui/material";
 import "./styles.css";
-import Button from "../ui/Button/Button";
 
 type TransactionType = "incomings" | "expenses";
 
@@ -50,7 +50,7 @@ export default function TransactionFormPage({
   return (
     <>
       <Tooltip title={`${formatMessage({ id: "create.update.goToPrevious.button.tooltip" })}`} arrow placement="top">
-        <Button onClick={() => router.back()} className="border w-auto! flex gap-1 bg-[#1a1a1a]! mb-2">
+        <Button variant="secondary" onClick={() => router.back()} className="border w-auto! flex gap-1 mb-2">
           <ArrowCircleLeft
             className="cursor-pointer"
           />

@@ -7,7 +7,7 @@
 
 body {
   @apply font-sans min-h-screen;
-  @apply bg-[#1a1a1a] text-[#e5e5e5];
+  /* @apply bg-[#1a1a1a] text-[#e5e5e5]; */
   @apply grid;
   @apply grid-rows-[auto_1fr];
   @apply grid-cols-[250px_1fr];

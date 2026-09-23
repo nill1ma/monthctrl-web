@@ -6,15 +6,13 @@ import { TransactionDetailsList } from "@/app/components/TransactionDetailsList/
 import { useExpenses } from "@/app/hooks/useExpenses/useExpenses";
 import { useTransactionCharts } from "@/app/hooks/useExpenses/useTransactionCharts/useTransactionCharts";
 import { useIncomings } from "@/app/hooks/useIncomings/useIncomings";
-import { useParams } from "next/navigation";
-import { FormattedMessage } from "react-intl";
+import { Button } from "@developmentsnil/awake-ui/button";
+import { ArrowCircleLeft } from "@mui/icons-material";
+import { Tooltip } from "@mui/material";
+import { useParams, useRouter } from "next/navigation";
+import { FormattedMessage, useIntl } from "react-intl";
 import ReferenceDate from "../../../components/referenceDate/ReferenceDate";
 import "./styles.css";
-import { Tooltip } from "@mui/material";
-import { ArrowCircleLeft } from "@mui/icons-material";
-import { useIntl } from "react-intl";
-import { useRouter } from "next/navigation";
-import Button from "@/app/components/ui/Button/Button";
 
 export default function Details() {
   const params = useParams();
@@ -33,7 +31,7 @@ export default function Details() {
   return (
     <>
     <Tooltip title={`${formatMessage({ id: "details.goBack.button.tooltip" })}`} arrow placement="top">
-      <Button onClick={() => router.push("/list")} className="border w-auto! flex gap-1 bg-[#1a1a1a]! mb-2">
+      <Button variant="secondary" onClick={() => router.push("/list")} className="border flex gap-1 mb-2">
         <ArrowCircleLeft
           className="cursor-pointer"
         />

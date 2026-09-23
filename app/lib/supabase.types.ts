@@ -104,6 +104,16 @@ export type Database = {
         }
         Relationships: []
       }
+      incomings_expenses_transactions_grouped: {
+        Row: {
+          expense_value: number | null
+          incoming_value: number | null
+          net_income: number | null
+          reference: string | null
+          user_id: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       [_ in never]: never

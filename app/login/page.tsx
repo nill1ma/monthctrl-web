@@ -6,8 +6,8 @@ import { useState } from "react";
 import "./styles.css";
 import LoginForm from "../components/forms/LoginForm/LoginForm";
 import { FormattedMessage } from "react-intl";
-import Divider from '@mui/material/Divider';
-
+// import Divider from '@mui/material/Divider';
+import { Separator } from "@developmentsnil/awake-ui/separator";
 
 export default function Login() {
   const [error, setError] = useState<string | null>(null);
@@ -30,14 +30,18 @@ export default function Login() {
   }
 
   const isDisabled = () => {
-    return isCreating ? {
-      disabled: true,
-    } : {};
+    return isCreating
+      ? {
+          disabled: true,
+        }
+      : {};
   };
 
   return (
     <main className="flex flex-col items-center gap-4 w-175">
-      <h1 className="text-2xl font-bold mb-6"><FormattedMessage id={"login.title"} /></h1>
+      <h1 className="text-2xl font-bold mb-6">
+        <FormattedMessage id={"login.title"} />
+      </h1>
 
       {error && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
@@ -45,31 +49,43 @@ export default function Login() {
         </div>
       )}
 
-      <article className={`flex justify-${isCreating ? 'between' : 'center'} border border-[#4d7c0f]/50 rounded`}>
+      <article
+        className={`flex justify-${isCreating ? "between" : "center"} border border-[#4d7c0f]/50 rounded`}
+      >
         <LoginForm
           {...isDisabled()}
           formattedMessageCardTitle="login.haveAccount"
           action={handleSubmit}
-          articleClassName={`${isCreating ? 'login-form-disabled' : ''}`}
+          articleClassName={`${isCreating ? "login-form-disabled" : ""}`}
         >
           <div className="input-control-button">
-            <Button className="login-button" variant="primary" type="submit" {...isDisabled()}>
+            <Button
+              className="login-button"
+              variant="primary"
+              type="submit"
+              {...isDisabled()}
+            >
               <FormattedMessage id={"login.loginButton"} />
             </Button>
           </div>
           <p className="mt-3 text-sm text-gray-500">
             <FormattedMessage id={"login.noAccount"} />{" "}
-            <a href="#" onClick={() => setIsCreating(true)} className="text-blue-500">
+            <a
+              href="#"
+              onClick={() => setIsCreating(true)}
+              className="text-blue-500"
+            >
               <FormattedMessage id={"login.registerLink"} />
             </a>
           </p>
         </LoginForm>
 
-        
-
         {isCreating && (
           <>
-            <Divider orientation="vertical"  className="bg-[#4d7c0f] h-[80%]" />
+            <Separator
+              orientation="vertical"
+              className="bg-[#4d7c0f]! h-[80%]! mt-5"
+            />
             <LoginForm
               formattedMessageCardTitle="login.createAccount"
               action={handleCreateAccount}

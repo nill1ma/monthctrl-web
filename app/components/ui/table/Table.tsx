@@ -1,25 +1,36 @@
 
+import { Table as AwakeUITable } from '@developmentsnil/awake-ui/table';
+import clsx from 'clsx';
 import './styles.css';
-import * as AwakeUITable from '@developmentsnil/awake-ui/table'
+import { ComponentProps } from 'react';
 
+type TableProps = ComponentProps<typeof AwakeUITable.Root>
+type TableHeaderProps = ComponentProps<typeof AwakeUITable.Head>
+type TableBodyProps = ComponentProps<typeof AwakeUITable.Body>
+type TableRowProps = ComponentProps<typeof AwakeUITable.Row>
+type TableCellProps = ComponentProps<typeof AwakeUITable.Cell>
+type TableHeaderCellProps = ComponentProps<typeof AwakeUITable.HeaderCell>
 
-
-export function Table({ children, className }: { children: React.ReactNode; className?: string }) {
-  return <AwakeUITable.Root className={`table ${className || ''}`}>{children}</AwakeUITable.Root>;
+export function Table({ children, className, ...rest }: TableProps) {
+  return <AwakeUITable.Root className={clsx('table', className)} {...rest}>{children}</AwakeUITable.Root>;
 }
 
-export function TableHeader({ children, className }: { children: React.ReactNode; className?: string }) {
-  return <AwakeUITable.Head className={`${className || ''}`}>{children}</AwakeUITable.Head>;
+export function TableHeader({ children, className, ...rest }: TableHeaderProps) {
+  return <AwakeUITable.Head className={className} {...rest}>{children}</AwakeUITable.Head>;
 }
 
-export function TableBody({ children, className }: { children: React.ReactNode; className?: string }) {
-  return <AwakeUITable.Body className={`${className || ''}`}>{children}</AwakeUITable.Body>;
+export function TableHeaderCell({ children, className, ...rest }: TableHeaderCellProps) {
+  return <AwakeUITable.HeaderCell className={clsx('table-cell',className)} {...rest}>{children}</AwakeUITable.HeaderCell>;
 }
 
-export function TableRow({ children, className, onClick, onMouseEnter, onMouseLeave }: { children: React.ReactNode; className?: string; onClick?: () => void; onMouseEnter?: () => void; onMouseLeave?: () => void }) {
-  return <AwakeUITable.Row onClick={onClick} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave} className={`${className || ''}`}>{children}</AwakeUITable.Row>;
+export function TableBody({ children, className, ...rest }: TableBodyProps) {
+  return <AwakeUITable.Body className={className} {...rest}>{children}</AwakeUITable.Body>;
 }
 
-export function TableCell({ children, className }: { children: React.ReactNode; className?: string }) {
-  return <AwakeUITable.Cell className={`table-cell ${className || ''}`}>{children}</AwakeUITable.Cell>;
+export function TableRow({ children, className, ...rest }: TableRowProps) {
+  return <AwakeUITable.Row className={className} {...rest}>{children}</AwakeUITable.Row>;
+}
+
+export function TableCell({ children, className, ...rest }: TableCellProps) {
+  return <AwakeUITable.Cell className={clsx('table-cell', className)} {...rest}>{children}</AwakeUITable.Cell>;
 }

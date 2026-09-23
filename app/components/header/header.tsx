@@ -1,19 +1,34 @@
 
-"use client"
+"use client";
+
 import { logout } from "@/app/services/auth/auth";
+import { Button } from "@developmentsnil/awake-ui/button";
 import "./styles.css";
-import Button from "@/app/components/ui/Button/Button";
+import { usePathname } from "next/navigation";
+import ToggleSwitch from "@/app/components/ui/ToggleSwitch/ToggleSwitch";
 
 export default function Header() {
-    async function handleLogout() {
-        await logout();
-      }
+  async function handleLogout() {
+    await logout();
+  }
+
+ const pathname = usePathname();
+
+ const isLoggedIn = pathname !== '/login'
+
   return (
     <header className="header">
       <h1>Bookkeeping</h1>
-      <form action={handleLogout}>
-        <Button variant="secondary" type="submit">Logout</Button>
-      </form>
+      <div>
+        <ToggleSwitch />
+        <form action={handleLogout}>
+          {isLoggedIn && (
+            <Button variant="secondary" type="submit">
+              Logout
+            </Button>
+          )}
+        </form>
+      </div>
     </header>
   );
 }

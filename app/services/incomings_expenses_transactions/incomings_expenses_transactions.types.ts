@@ -7,3 +7,7 @@ export interface IncomingsExpensesTransaction {
   expense_value: number,
   net_income: number
 }
+export type IncomingsExpensesTransactionResponse = {
+  data: IncomingsExpensesTransaction[],
+  totalElements: number
+}
