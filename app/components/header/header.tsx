@@ -18,8 +18,8 @@ export default function Header() {
 
   return (
     <header className="header">
-      <h1>Bookkeeping</h1>
-      <div>
+      <h1>Month Ctrl</h1>
+      <div className="header-actions">
         <ToggleSwitch />
         <form action={handleLogout}>
           {isLoggedIn && (

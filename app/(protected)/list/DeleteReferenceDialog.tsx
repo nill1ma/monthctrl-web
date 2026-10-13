@@ -16,7 +16,7 @@ export function DeleteReferenceDialog({ reference, open, onOpenChange, onConfirm
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
         <Dialog.Backdrop />
-        <Dialog.Popup className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 bg-white dark:bg-neutral-900 rounded-xl shadow-xl p-6 w-full max-w-sm flex flex-col gap-4">
+        <Dialog.Popup className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 rounded-xl shadow-xl p-6 w-full max-w-sm flex flex-col gap-4">
           <Dialog.Title className="text-lg font-semibold">
             Deletar {reference}?
           </Dialog.Title>

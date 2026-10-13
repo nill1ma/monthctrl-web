@@ -2,7 +2,7 @@
 
 import { useMounted } from '@/app/hooks/useMounted/useMounted';
 import { useTheme } from '@/app/providers/ThemeProvider';
-import Switch from '@/app/components/ui/Switch/Switch';
+import { Switch } from '@developmentsnil/awake-ui/switch';
 
 export default function ToggleSwitch() {
   const { setTheme, resolvedTheme } = useTheme();
@@ -14,8 +14,8 @@ export default function ToggleSwitch() {
 
   return (
     <Switch
-      className="cursor-pointer"
       checked={resolvedTheme === 'dark'}
+      className="rounded-full"
       onCheckedChange={(checked) => setTheme(checked ? 'dark' : 'light')}
     />
   );

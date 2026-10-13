@@ -6,13 +6,16 @@
 
 .sidebar-link {
   @apply px-4 py-2 rounded-lg transition-colors;
-  @apply text-[#e5e5e5];
+  color: var(--color-text);
 }
 
 .sidebar-link:hover {
-  @apply bg-[#1f1f1f] text-[#a3e635];
+  background-color: var(--color-background-selected);
+  color: var(--color-text);
 }
 
 .sidebar-link--active {
-  @apply bg-[#1f1f1f] text-[#a3e635] font-medium;
+  background-color: var(--color-background-selected);
+  color: var(--color-text);
+  @apply font-medium;
 }
