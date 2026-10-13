@@ -23,7 +23,7 @@ export async function getExpenseByReference(reference: string): Promise<Pick<Exp
   if (authError || !user) throw new Error("Usuário não autenticado")
   const { data, error } = await supabase
     .from('expenses')
-    .select('id, value, destination')
+    .select('id, value, destination, currency')
     .eq('reference', reference)
     .eq('user_id', user.id)
   if (error) throw error.message
@@ -103,4 +103,15 @@ export async function deleteExpense(
 
   if (error) throw new Error(error.message)
   return data
+}
+export async function deleteExpensesByReference(reference: string) {
+  const supabase = await createClient()
+  const { data: { user }, error: authError } = await supabase.auth.getUser()
+  if (authError || !user) throw new Error("Usuário não autenticado")
+  const { error } = await supabase
+    .from('expenses')
+    .delete()
+    .eq('reference', reference)
+    .eq('user_id', user.id)
+  if (error) throw new Error(error.message)
 }

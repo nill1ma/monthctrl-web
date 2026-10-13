@@ -36,7 +36,7 @@ export async function getIncomingByReference(reference: string): Promise<Pick<In
   if (authError || !user) throw new Error("Usuário não autenticado")
   const { data, error } = await supabase
     .from('incomings')
-    .select('id, value, origin')
+    .select('id, value, origin, currency')
     .eq('reference', reference)
     .eq('user_id', user.id)
   if (error) throw error.message
@@ -103,4 +103,15 @@ export async function deleteIncoming(
 
   if (error) throw new Error(error.message)
   return data
+}
+export async function deleteIncomingsByReference(reference: string) {
+  const supabase = await createClient()
+  const { data: { user }, error: authError } = await supabase.auth.getUser()
+  if (authError || !user) throw new Error("Usuário não autenticado")
+  const { error } = await supabase
+    .from('incomings')
+    .delete()
+    .eq('reference', reference)
+    .eq('user_id', user.id)
+  if (error) throw new Error(error.message)
 }

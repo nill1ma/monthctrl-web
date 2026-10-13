@@ -10,12 +10,38 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.5"
+    PostgrestVersion: "14.15"
   }
   public: {
     Tables: {
+      categories: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          type: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          type: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          type?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       expenses: {
         Row: {
+          category_id: string | null
+          currency: string
           destination: string
           due_date: string | null
           id: string
@@ -25,6 +51,8 @@ export type Database = {
           value: number
         }
         Insert: {
+          category_id?: string | null
+          currency?: string
           destination: string
           due_date?: string | null
           id?: string
@@ -34,6 +62,8 @@ export type Database = {
           value?: number
         }
         Update: {
+          category_id?: string | null
+          currency?: string
           destination?: string
           due_date?: string | null
           id?: string
@@ -42,11 +72,21 @@ export type Database = {
           user_id?: string
           value?: number
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "expenses_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       incomings: {
         Row: {
+          category_id: string | null
           created_at: string
+          currency: string
           id: string
           origin: string
           reference: string
@@ -54,7 +94,9 @@ export type Database = {
           value: number | null
         }
         Insert: {
+          category_id?: string | null
           created_at?: string
+          currency?: string
           id?: string
           origin: string
           reference: string
@@ -62,40 +104,68 @@ export type Database = {
           value?: number | null
         }
         Update: {
+          category_id?: string | null
           created_at?: string
+          currency?: string
           id?: string
           origin?: string
           reference?: string
           user_id?: string
           value?: number | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "incomings_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
           id: string
           name: string
+          nickname: string | null
           occupation: string | null
+          preferred_currency: string
           user_id: string
         }
         Insert: {
           id?: string
           name: string
+          nickname?: string | null
           occupation?: string | null
+          preferred_currency?: string
           user_id: string
         }
         Update: {
           id?: string
           name?: string
+          nickname?: string | null
           occupation?: string | null
+          preferred_currency?: string
           user_id?: string
         }
         Relationships: []
       }
     }
     Views: {
+      currency_totals: {
+        Row: {
+          currency: string | null
+          expense_value: number | null
+          incoming_value: number | null
+          net_income: number | null
+          user_id: string | null
+        }
+        Relationships: []
+      }
       incomings_expenses_transactions: {
         Row: {
+          category_id: string | null
+          currency: string | null
           id: string | null
           reference: string | null
           type: string | null
@@ -106,6 +176,7 @@ export type Database = {
       }
       incomings_expenses_transactions_grouped: {
         Row: {
+          currency: string | null
           expense_value: number | null
           incoming_value: number | null
           net_income: number | null
@@ -116,7 +187,13 @@ export type Database = {
       }
     }
     Functions: {
-      [_ in never]: never
+      get_distinct_references: {
+        Args: { p_limit: number; p_offset: number; p_user_id: string }
+        Returns: {
+          reference: string
+          total_count: number
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never

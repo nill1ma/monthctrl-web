@@ -1,13 +1,16 @@
-import { UUID } from "node:crypto";
-
-export interface IncomingsExpensesTransaction {
-  id: UUID,
-  reference: string,
-  incoming_value: number,
-  expense_value: number,
-  net_income: number
+export interface CurrencyEntry {
+  currency: string;
+  incoming_value: number;
+  expense_value: number;
+  net_income: number;
 }
-export type IncomingsExpensesTransactionResponse = {
-  data: IncomingsExpensesTransaction[],
-  totalElements: number
+
+export interface ReferenceGroup {
+  reference: string;
+  currencies: CurrencyEntry[];
+}
+
+export type ReferenceGroupResponse = {
+  data: ReferenceGroup[];
+  totalElements: number;
 }

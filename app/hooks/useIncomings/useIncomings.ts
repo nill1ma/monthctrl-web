@@ -1,4 +1,4 @@
-import { createIncoming, deleteIncoming, getIncomingByReference, getIncomingsById, updateIncoming } from "@/app/services/incomings/incomings";
+import { createIncoming, deleteIncoming, deleteIncomingsByReference, getIncomingByReference, getIncomingsById, updateIncoming } from "@/app/services/incomings/incomings";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export function useIncomings(reference?: string, id?: string) {
@@ -43,6 +43,15 @@ const { mutateAsync: updateMutation, isPending: isUpdating } = useMutation({
     },
   });
 
+  const { mutateAsync: deleteByReferenceMutation } = useMutation({
+    mutationFn: deleteIncomingsByReference,
+    mutationKey: ['delete-incomings-by-reference'],
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['incomings'] });
+      queryClient.invalidateQueries({ queryKey: ['incomings-expenses-transactions'] });
+    },
+  });
+
   return {
     data,
     isLoading,
@@ -54,5 +63,6 @@ const { mutateAsync: updateMutation, isPending: isUpdating } = useMutation({
     isCreating,
     isDeleting,
     isUpdating,
+    deleteByReferenceMutation,
   };
 }
