@@ -92,20 +92,22 @@ export function TransactionDetailsList<T extends Transaction>({
           <Dialog.Backdrop />
           <Dialog.Popup className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 rounded-xl shadow-xl p-6 w-full max-w-sm flex flex-col gap-4">
             <Dialog.Title className="text-lg font-semibold">
-              Confirmar exclusão
+              {formatMessage({ id: "delete.dialog.title" })}
             </Dialog.Title>
             <Dialog.Description className="text-sm text-gray-500">
-              Este item será removido permanentemente. Esta ação não pode ser desfeita.
+              {formatMessage({ id: "delete.dialog.description" })}
             </Dialog.Description>
             <div className="flex justify-end gap-3 mt-2">
-              <Dialog.Close render={<Button variant="secondary">Cancelar</Button>} />
+              <Dialog.Close render={<Button variant="secondary">{formatMessage({ id: "delete.dialog.cancel" })}</Button>} />
               <Button
                 variant="primary"
                 onClick={handleConfirmDelete}
                 disabled={isDeleting}
                 className="bg-red-600 hover:bg-red-700 text-white border-red-600"
               >
-                {isDeleting ? "Deletando..." : "Deletar"}
+                {isDeleting
+                  ? formatMessage({ id: "delete.dialog.confirm.loading" })
+                  : formatMessage({ id: "delete.dialog.confirm" })}
               </Button>
             </div>
           </Dialog.Popup>

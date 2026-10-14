@@ -7,3 +7,40 @@
 .header-actions {
   @apply flex items-center gap-4;
 }
+
+.locale-switcher {
+  @apply flex items-center gap-0.5 rounded-full p-0.5;
+  background-color: var(--color-awake-neutral-200);
+}
+
+[data-theme=dark] .locale-switcher {
+  background-color: var(--color-awake-neutral-dark-700);
+}
+
+.locale-btn {
+  @apply px-2.5 py-0.5 rounded-full text-xs font-medium transition-colors cursor-pointer;
+  color: var(--color-awake-neutral-500);
+}
+
+.locale-btn:hover {
+  color: var(--color-awake-neutral-900);
+}
+
+[data-theme=dark] .locale-btn {
+  color: var(--color-awake-neutral-dark-400);
+}
+
+[data-theme=dark] .locale-btn:hover {
+  color: var(--color-awake-neutral-dark-50);
+}
+
+.locale-btn--active {
+  background-color: var(--color-awake-neutral-50);
+  color: var(--color-awake-neutral-900);
+  @apply shadow-sm;
+}
+
+[data-theme=dark] .locale-btn--active {
+  background-color: var(--color-awake-neutral-dark-600);
+  color: var(--color-awake-neutral-dark-50);
+}

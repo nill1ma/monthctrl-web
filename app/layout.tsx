@@ -11,7 +11,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body>
         <ReactQueryProvider>
           <ThemeProvider>
-            <I18nProvider locale="en">
+            <I18nProvider>
               <Header />
               {children}
             </I18nProvider>

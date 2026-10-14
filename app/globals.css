@@ -21,31 +21,6 @@
   --color-text: #ffffff;
   --color-text-secondary: #B0B4BA;
   --color-border: #2E3135;
-
-  /* Awake UI overrides para usar as cores do projeto */
-  --awake-dialog-popup-bg: #212225;
-  --awake-dialog-title-text: #ffffff;
-  --awake-dialog-description-text: #B0B4BA;
-  --awake-dialog-close-bg: #2E3135;
-  --awake-dialog-close-text: #ffffff;
-  --awake-dialog-close-hover-bg: #3a3d42;
-
-  --awake-secondary-bg: #2E3135;
-  --awake-secondary-text: #ffffff;
-  --awake-secondary-hover: #3a3d42;
-
-  --awake-field-label-color: #ffffff;
-  --awake-field-control-bg: #212225;
-  --awake-field-control-border: #2E3135;
-  --awake-field-control-text: #ffffff;
-
-  --awake-pagination-info-text: #B0B4BA;
-
-  --awake-table-border: #2E3135;
-  --awake-table-header-text: #B0B4BA;
-  --awake-table-row-border: #2E3135;
-  --awake-table-row-hover-bg: #2E3135;
-  --awake-table-cell-text: #ffffff;
 }
 
 body {
@@ -98,36 +73,4 @@ input[type="number"]::-webkit-inner-spin-button {
 
 input[type="number"] {
   -moz-appearance: textfield;
-}
-
-/* Awake UI dark mode overrides — mesma especificidade dos seletores da lib */
-[data-theme="dark"] .awake-dialog-popup {
-  --awake-dialog-popup-bg: #212225;
-}
-[data-theme="dark"] .awake-dialog-title {
-  --awake-dialog-title-text: #ffffff;
-}
-[data-theme="dark"] .awake-dialog-description {
-  --awake-dialog-description-text: #B0B4BA;
-}
-[data-theme="dark"] .awake-dialog-close {
-  --awake-dialog-close-bg: #2E3135;
-  --awake-dialog-close-text: #ffffff;
-  --awake-dialog-close-hover-bg: #3a3d42;
-}
-[data-theme="dark"] .awake-button--secondary {
-  --awake-secondary-bg: #2E3135;
-  --awake-secondary-text: #ffffff;
-  --awake-secondary-hover: #3a3d42;
-}
-[data-theme="dark"] .awake-field-label {
-  --awake-field-label-color: #ffffff;
-}
-[data-theme="dark"] .awake-field-control {
-  --awake-field-control-bg: #212225;
-  --awake-field-control-border: #2E3135;
-  --awake-field-control-text: #ffffff;
-}
-[data-theme="dark"] .awake-pagination-info {
-  --awake-pagination-info-text: #B0B4BA;
 }

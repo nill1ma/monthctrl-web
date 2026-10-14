@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useIntl } from "react-intl"
 import { changePassword } from "@/app/services/profiles/profiles"
 
 type Props = {
@@ -9,6 +10,7 @@ type Props = {
 }
 
 export default function ChangePasswordModal({ open, onClose }: Props) {
+  const { formatMessage } = useIntl()
   const [password, setPassword] = useState("")
   const [confirm, setConfirm] = useState("")
   const [error, setError] = useState<string | null>(null)
@@ -22,12 +24,12 @@ export default function ChangePasswordModal({ open, onClose }: Props) {
     setError(null)
 
     if (password.length < 6) {
-      setError("A senha deve ter pelo menos 6 caracteres.")
+      setError(formatMessage({ id: "changePassword.error.tooShort" }))
       return
     }
 
     if (password !== confirm) {
-      setError("As senhas não coincidem.")
+      setError(formatMessage({ id: "changePassword.error.mismatch" }))
       return
     }
 
@@ -38,7 +40,7 @@ export default function ChangePasswordModal({ open, onClose }: Props) {
       setPassword("")
       setConfirm("")
     } catch {
-      setError("Erro ao alterar a senha. Tente novamente.")
+      setError(formatMessage({ id: "changePassword.error.generic" }))
     } finally {
       setSaving(false)
     }
@@ -55,17 +57,19 @@ export default function ChangePasswordModal({ open, onClose }: Props) {
   return (
     <div className="modal-overlay">
       <div className="modal">
-        <h2 className="modal-title">Alterar senha</h2>
+        <h2 className="modal-title">{formatMessage({ id: "changePassword.title" })}</h2>
 
         {success ? (
           <div className="modal-success">
-            <p>Senha alterada com sucesso!</p>
-            <button className="btn-primary" onClick={handleClose}>Fechar</button>
+            <p>{formatMessage({ id: "changePassword.success" })}</p>
+            <button className="btn-primary" onClick={handleClose}>
+              {formatMessage({ id: "changePassword.close" })}
+            </button>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="modal-form">
             <label className="form-label">
-              Nova senha
+              {formatMessage({ id: "changePassword.newPassword" })}
               <input
                 className="form-input"
                 type="password"
@@ -76,7 +80,7 @@ export default function ChangePasswordModal({ open, onClose }: Props) {
               />
             </label>
             <label className="form-label">
-              Confirmar senha
+              {formatMessage({ id: "changePassword.confirmPassword" })}
               <input
                 className="form-input"
                 type="password"
@@ -90,10 +94,12 @@ export default function ChangePasswordModal({ open, onClose }: Props) {
 
             <div className="modal-actions">
               <button type="button" className="btn-secondary" onClick={handleClose}>
-                Cancelar
+                {formatMessage({ id: "changePassword.cancel" })}
               </button>
               <button type="submit" className="btn-primary" disabled={saving}>
-                {saving ? "Salvando..." : "Salvar"}
+                {saving
+                  ? formatMessage({ id: "changePassword.saving" })
+                  : formatMessage({ id: "changePassword.save" })}
               </button>
             </div>
           </form>

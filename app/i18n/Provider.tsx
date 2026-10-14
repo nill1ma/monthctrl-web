@@ -1,14 +1,26 @@
+"use client";
+
 import { IntlProvider } from "react-intl";
 import { en } from "./en";
+import { pt } from "./pt";
+import { es } from "./es";
+import { LocaleProvider, useLocale } from "./LocaleContext";
 
-const messages: Record<string, Record<string, string>> = {
-  en: en as Record<string, string>,
-};
+const messages = { en, pt, es };
 
-export default function I18nProvider({ children, locale = "en" }: { children: React.ReactNode; locale?: string }) {
+function IntlWrapper({ children }: { children: React.ReactNode }) {
+  const { locale } = useLocale();
   return (
     <IntlProvider locale={locale} messages={messages[locale]}>
       {children}
     </IntlProvider>
+  );
+}
+
+export default function I18nProvider({ children }: { children: React.ReactNode }) {
+  return (
+    <LocaleProvider>
+      <IntlWrapper>{children}</IntlWrapper>
+    </LocaleProvider>
   );
 }

@@ -6,21 +6,23 @@ import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
+import { useIntl } from "react-intl"
 import { getProfile, saveProfile } from "@/app/services/profiles/profiles"
 import ChangePasswordModal from "./change-password-modal"
 
 const CURRENCY_OPTIONS = ["BRL", "CAD", "USD", "EUR", "GBP"]
 
 const profileSchema = z.object({
-  name: z.string().min(1, "Nome é obrigatório"),
+  name: z.string().min(1),
   nickname: z.string().optional(),
   occupation: z.string().optional(),
-  preferred_currency: z.string().min(1, "Moeda é obrigatória"),
+  preferred_currency: z.string().min(1),
 })
 
 type ProfileFormValues = z.infer<typeof profileSchema>
 
 export default function ProfilePage() {
+  const { formatMessage } = useIntl()
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [showModal, setShowModal] = useState(false)
@@ -70,34 +72,34 @@ export default function ProfilePage() {
   if (loading) {
     return (
       <div className="profile-loading">
-        <p>Carregando...</p>
+        <p>{formatMessage({ id: "profile.loading" })}</p>
       </div>
     )
   }
 
   return (
     <div className="profile-container">
-      <h1 className="profile-title">Perfil</h1>
+      <h1 className="profile-title">{formatMessage({ id: "profile.title" })}</h1>
 
       <form onSubmit={onSubmit} className="profile-form">
         <label className="form-label">
-          Nome
+          {formatMessage({ id: "profile.name" })}
           <input className="form-input" {...register("name")} />
           {errors.name && <span className="form-error">{errors.name.message}</span>}
         </label>
 
         <label className="form-label">
-          Nickname
+          {formatMessage({ id: "profile.nickname" })}
           <input className="form-input" {...register("nickname")} />
         </label>
 
         <label className="form-label">
-          Ocupação
+          {formatMessage({ id: "profile.occupation" })}
           <input className="form-input" {...register("occupation")} />
         </label>
 
         <label className="form-label">
-          Moeda preferida
+          {formatMessage({ id: "profile.preferredCurrency" })}
           <select className="form-input" {...register("preferred_currency")}>
             {CURRENCY_OPTIONS.map((c) => (
               <option key={c} value={c}>{c}</option>
@@ -108,18 +110,18 @@ export default function ProfilePage() {
           )}
         </label>
 
-        {saveSuccess && <p className="form-success">Perfil salvo com sucesso!</p>}
+        {saveSuccess && <p className="form-success">{formatMessage({ id: "profile.saveSuccess" })}</p>}
 
         <div className="profile-actions">
           <button type="submit" className="btn-primary" disabled={saving}>
-            {saving ? "Salvando..." : "Salvar"}
+            {saving ? formatMessage({ id: "profile.saving" }) : formatMessage({ id: "profile.save" })}
           </button>
           <button
             type="button"
             className="btn-secondary"
             onClick={() => setShowModal(true)}
           >
-            Alterar senha
+            {formatMessage({ id: "profile.changePassword" })}
           </button>
         </div>
       </form>
