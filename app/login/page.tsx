@@ -38,7 +38,7 @@ export default function Login() {
   };
 
   return (
-    <main className="flex flex-col items-center gap-4 w-175">
+    <main className="login-main">
       <h1 className="text-2xl font-bold mb-6">
         <FormattedMessage id={"login.title"} />
       </h1>
@@ -50,7 +50,7 @@ export default function Login() {
       )}
 
       <article
-        className={`flex justify-${isCreating ? "between" : "center"} border border-[#4d7c0f]/50 rounded`}
+        className={`login-card flex justify-${isCreating ? "between" : "center"} border border-[#4d7c0f]/50 rounded`}
       >
         <LoginForm
           {...isDisabled()}
