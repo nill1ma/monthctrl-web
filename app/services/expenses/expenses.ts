@@ -17,7 +17,7 @@ export async function getExpenses() {
 
 }
 
-export async function getExpenseByReference(reference: string): Promise<Pick<Expense, 'id' | 'value' | 'destination'>[]> {
+export async function getExpenseByReference(reference: string): Promise<Pick<Expense, 'id' | 'value' | 'destination' | 'currency'>[]> {
   const supabase = await createClient()
   const { data: { user }, error: authError } = await supabase.auth.getUser()
   if (authError || !user) throw new Error("Usuário não autenticado")

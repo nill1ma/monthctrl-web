@@ -30,7 +30,7 @@ export async function getIncomingsById(id:string) {
   return data
 }
 
-export async function getIncomingByReference(reference: string): Promise<Pick<Incoming, 'id' | 'value' | 'origin'>[]> {
+export async function getIncomingByReference(reference: string): Promise<Pick<Incoming, 'id' | 'value' | 'origin' | 'currency'>[]> {
   const supabase = await createClient()
   const { data: { user }, error: authError } = await supabase.auth.getUser()
   if (authError || !user) throw new Error("Usuário não autenticado")
