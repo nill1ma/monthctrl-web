@@ -99,16 +99,13 @@ export function TransactionDetailsList<T extends Transaction>({
             </Dialog.Description>
             <div className="flex justify-end gap-3 mt-2">
               <Dialog.Close render={<Button variant="secondary">{formatMessage({ id: "delete.dialog.cancel" })}</Button>} />
-              <Button
-                variant="primary"
-                onClick={handleConfirmDelete}
-                disabled={isDeleting}
-                className="bg-red-600 hover:bg-red-700 text-white border-red-600"
-              >
-                {isDeleting
-                  ? formatMessage({ id: "delete.dialog.confirm.loading" })
-                  : formatMessage({ id: "delete.dialog.confirm" })}
-              </Button>
+              <Dialog.Close render={
+                <Button variant="destructive" disabled={isDeleting} onClick={handleConfirmDelete}>
+                  {isDeleting
+                    ? formatMessage({ id: "delete.dialog.confirm.loading" })
+                    : formatMessage({ id: "delete.dialog.confirm" })}
+                </Button>
+              } />
             </div>
           </Dialog.Popup>
         </Dialog.Portal>

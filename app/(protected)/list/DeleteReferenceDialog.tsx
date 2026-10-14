@@ -29,10 +29,9 @@ export function DeleteReferenceDialog({ reference, open, onOpenChange, onConfirm
           <div className="flex justify-end gap-3 mt-2">
             <Dialog.Close render={<Button variant="secondary">{formatMessage({ id: "delete.dialog.cancel" })}</Button>} />
             <Button
-              variant="primary"
+              variant="destructive"
               onClick={onConfirm}
               disabled={isDeleting}
-              className="bg-red-600 hover:bg-red-700 text-white border-red-600"
             >
               {isDeleting
                 ? formatMessage({ id: "delete.dialog.confirm.loading" })

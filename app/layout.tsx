@@ -1,6 +1,7 @@
 import Header from "@/app/components/header/header";
 import { ThemeProvider } from "@/app/providers/ThemeProvider";
 import "@developmentsnil/awake-ui/style.css";
+import "@developmentsnil/awake-ui/dark-theme.css";
 import "./globals.css";
 import I18nProvider from "./i18n/Provider";
 import ReactQueryProvider from "./providers/RectQueryProvider/ReactQueryProvider";

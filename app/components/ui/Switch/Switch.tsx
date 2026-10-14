@@ -1,8 +1,15 @@
 import { Switch as AwakeUISwitch } from '@developmentsnil/awake-ui/switch';
 import { ComponentProps } from 'react';
 
-type SwitchProps = ComponentProps<typeof AwakeUISwitch>;
+type SwitchRootProps = ComponentProps<typeof AwakeUISwitch.Root>;
+type SwitchThumbProps = ComponentProps<typeof AwakeUISwitch.Thumb>;
 
-export default function Switch(props: SwitchProps) {
-  return <AwakeUISwitch {...props} />;
+function Root(props: SwitchRootProps) {
+  return <AwakeUISwitch.Root {...props} />;
 }
+
+function Thumb(props: SwitchThumbProps) {
+  return <AwakeUISwitch.Thumb {...props} />;
+}
+
+export const Switch = { Root, Thumb };

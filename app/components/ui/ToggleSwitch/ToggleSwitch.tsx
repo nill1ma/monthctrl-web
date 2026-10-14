@@ -13,10 +13,11 @@ export default function ToggleSwitch() {
   }
 
   return (
-    <Switch
+    <Switch.Root
       checked={resolvedTheme === 'dark'}
-      className="rounded-full"
       onCheckedChange={(checked) => setTheme(checked ? 'dark' : 'light')}
-    />
+    >
+      <Switch.Thumb />
+    </Switch.Root>
   );
 }
