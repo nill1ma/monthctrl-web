@@ -82,7 +82,7 @@ export default function Details() {
                 <span className="text-red-500 font-medium">{formatCurrency(group.expenses, group.currency)}</span>
               </div>
               <div className="flex justify-between text-sm border-t pt-1 mt-1">
-                <span className="text-gray-700 font-medium">Net</span>
+                <span className="text-gray-700 font-medium"><FormattedMessage id="details.net" /></span>
                 <span className={`font-semibold ${group.netIncome >= 0 ? "text-emerald-600" : "text-red-500"}`}>
                   {formatCurrency(group.netIncome, group.currency)}
                 </span>

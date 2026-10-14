@@ -161,7 +161,7 @@ export default function List() {
               {group.reference}
             </span>
 
-            <Tooltip title={`Deletar todas as transações de ${group.reference}`} arrow placement="top">
+            <Tooltip title={formatMessage({ id: "list.deleteRef.tooltip" }, { reference: group.reference })} arrow placement="top">
               <DeleteForever
                 className="text-gray-400 hover:text-red-500 cursor-pointer transition-colors"
                 onClick={(e) => {

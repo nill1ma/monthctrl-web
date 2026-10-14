@@ -57,6 +57,8 @@ export const es: Record<string, string> = {
   "list.currency.searchPlaceholder": "USD, BRL…",
   "list.currency.original": "— Original",
   "list.currency.unavailable": "Tasa no disponible para algunas monedas",
+  "list.deleteRef.tooltip": "Eliminar todas las transacciones de {reference}",
+  "details.net": "Saldo",
 
   // Profile page
   "profile.title": "Perfil",

@@ -57,6 +57,8 @@ export const en: Record<string, string> = {
   "list.currency.searchPlaceholder": "USD, BRL…",
   "list.currency.original": "— Original",
   "list.currency.unavailable": "Rate unavailable for some currencies",
+  "list.deleteRef.tooltip": "Delete all transactions of {reference}",
+  "details.net": "Net",
 
   // Profile page
   "profile.title": "Profile",
