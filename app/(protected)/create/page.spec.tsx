@@ -1,19 +1,46 @@
-import { render, screen } from '@testing-library/react'
-import CreateForm from './page'
+import { render, screen } from '@testing-library/react';
+import CreateForm from './page';
 
-// Mock the TransactionFormPage component
+// TransactionFormPage handles all the real logic — tested in its own spec.
+// This spec only verifies that the Create route wires up mode="create" correctly.
 jest.mock('@/app/components/TransactionFormPage/TransactionFormPage', () => {
-  return function TransactionFormPage({ mode }: { mode: string }) {
-    return <div data-testid="transaction-form-page" data-mode={mode}>Transaction Form Page</div>
-  }
-})
+  return function TransactionFormPage({
+    mode,
+    type,
+    id,
+    redirectTo,
+  }: {
+    mode: string;
+    type?: string;
+    id?: string;
+    redirectTo?: string;
+  }) {
+    return (
+      <div
+        data-testid="transaction-form-page"
+        data-mode={mode}
+        data-type={type ?? ''}
+        data-id={id ?? ''}
+        data-redirect-to={redirectTo ?? ''}
+      >
+        Transaction Form Page
+      </div>
+    );
+  };
+});
 
-describe('Create Form', () => {
-  it('should render TransactionFormPage with create mode', () => {
-    render(<CreateForm />)
+describe('Create page', () => {
+  it('renders TransactionFormPage in create mode', () => {
+    render(<CreateForm />);
+    const form = screen.getByTestId('transaction-form-page');
+    expect(form).toBeInTheDocument();
+    expect(form).toHaveAttribute('data-mode', 'create');
+  });
 
-    const formPage = screen.getByTestId('transaction-form-page')
-    expect(formPage).toBeInTheDocument()
-    expect(formPage).toHaveAttribute('data-mode', 'create')
-  })
-})
+  it('does not pass a type or id (create has no pre-selected type)', () => {
+    render(<CreateForm />);
+    const form = screen.getByTestId('transaction-form-page');
+    expect(form).toHaveAttribute('data-type', '');
+    expect(form).toHaveAttribute('data-id', '');
+  });
+});

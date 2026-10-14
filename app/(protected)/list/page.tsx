@@ -26,8 +26,9 @@ const ORIGINAL_VALUE = "";
 
 
 // Sub-componente necessário: useFilteredItems precisa estar dentro do contexto do Root
-function CurrencyList({ items }: { items: string[] }) {
-  const filtered = Autocomplete.useFilteredItems(items);
+// O hook lê do contexto sem argumento e retorna apenas os itens que passam no filtro atual
+function CurrencyList() {
+  const filtered = Autocomplete.useFilteredItems<string>();
   return (
     <>
       {filtered.map((c) => (
@@ -129,7 +130,7 @@ export default function List() {
             <Autocomplete.Positioner>
               <Autocomplete.Popup>
                 <Autocomplete.List>
-                  <CurrencyList items={currencyItems} />
+                  <CurrencyList />
                 </Autocomplete.List>
                 <Autocomplete.Empty>
                   {formatMessage({ id: "list.currency.noResults" })}

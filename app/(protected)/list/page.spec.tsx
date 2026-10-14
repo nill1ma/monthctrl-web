@@ -1,152 +1,287 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import List from './page';
 import { useIncomingsExpensesTransactionsList } from '@/app/hooks/useIncomingsExpensesTransactionsList/useIncomingsExpensesTransactionsList';
+import { useIncomings } from '@/app/hooks/useIncomings/useIncomings';
+import { useExpenses } from '@/app/hooks/useExpenses/useExpenses';
+import { useExchangeRates } from '@/app/hooks/useExchangeRates/useExchangeRates';
 
-// Mock the hook
+// ── Hooks ───────────────────────────────────────────────────────────────────
 jest.mock('@/app/hooks/useIncomingsExpensesTransactionsList/useIncomingsExpensesTransactionsList');
+jest.mock('@/app/hooks/useIncomings/useIncomings');
+jest.mock('@/app/hooks/useExpenses/useExpenses');
+jest.mock('@/app/hooks/useExchangeRates/useExchangeRates');
 
-// Mock the Loading component
+// ── Navigation / intl ───────────────────────────────────────────────────────
+const mockPush = jest.fn();
+jest.mock('next/navigation', () => ({
+  useRouter: () => ({ push: mockPush }),
+}));
+
+jest.mock('react-intl', () => ({
+  useIntl: () => ({ formatMessage: ({ id }: { id: string }) => id }),
+}));
+
+// ── UI deps ─────────────────────────────────────────────────────────────────
 jest.mock('@/app/components/loading/loading', () => {
   return function Loading() {
     return <div data-testid="loading">Loading...</div>;
   };
 });
 
-// Mock the Table components
-jest.mock('@/app/components/ui/table/Table', () => ({
-  Table: ({ children, className }: { children: React.ReactNode; className?: string }) => <table data-testid="table" className={className}>{children}</table>,
-  TableHeader: ({ children, className }: { children: React.ReactNode; className?: string }) => <thead className={className}>{children}</thead>,
-  TableBody: ({ children }: { children: React.ReactNode }) => <tbody>{children}</tbody>,
-  TableRow: ({ children, className, onClick }: { children: React.ReactNode; className?: string; onClick?: () => void }) => <tr className={className} onClick={onClick}>{children}</tr>,
-  TableCell: ({ children, className }: { children: React.ReactNode; className?: string }) => <td className={className}>{children}</td>,
-}));
-
-// Mock the CellContent component
-jest.mock('./Components/CellComponent', () => {
-  return function CellContent({ column, item, className }: { column: { key: string }; item: Record<string, unknown>; className?: string }) {
-    return <td className={className}>{String(item[column.key])}</td>;
+jest.mock('@/app/components/ui/Pagination/Pagination', () => {
+  return function Pagination({
+    currentPage,
+    totalPages,
+    onPageChange,
+  }: {
+    currentPage: number;
+    totalPages: number;
+    onPageChange: (p: number) => void;
+  }) {
+    return (
+      <div data-testid="pagination">
+        <button onClick={() => onPageChange(currentPage + 1)} disabled={currentPage >= totalPages}>
+          Next
+        </button>
+      </div>
+    );
   };
 });
 
-// Mock next/navigation
-jest.mock('next/navigation', () => ({
-  redirect: jest.fn(),
+jest.mock('./DeleteReferenceDialog', () => ({
+  DeleteReferenceDialog: ({
+    open,
+    reference,
+    onConfirm,
+    onOpenChange,
+  }: {
+    open: boolean;
+    reference: string;
+    onConfirm: () => void;
+    onOpenChange: (v: boolean) => void;
+  }) =>
+    open ? (
+      <div data-testid="delete-dialog">
+        <span data-testid="delete-ref">{reference}</span>
+        <button data-testid="confirm-delete" onClick={onConfirm}>
+          Confirm
+        </button>
+        <button onClick={() => onOpenChange(false)}>Cancel</button>
+      </div>
+    ) : null,
 }));
 
-describe('List Component', () => {
-  const mockData = [
-    { id: 1, reference: '01/2024', incoming_value: 5000, expense_value: 1500, net_income: 3500 },
-    { id: 2, reference: '02/2024', incoming_value: 2000, expense_value: 800, net_income: 1200 },
-  ];
+// @mui/icons-material renders the real SVG with data-testid="DeleteForeverIcon"
 
+jest.mock('@mui/material', () => ({
+  Tooltip: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+}));
+
+// Autocomplete: simple searchable select stub
+jest.mock('@developmentsnil/awake-ui/autocomplete', () => {
+  const { useState } = require('react');
+  function Root({
+    children,
+    onValueChange,
+  }: {
+    children: React.ReactNode;
+    onValueChange?: (v: string) => void;
+    items?: string[];
+  }) {
+    const [open, setOpen] = useState(false);
+    const [query, setQuery] = useState('');
+    return (
+      <div>
+        <input
+          data-testid="currency-input"
+          value={query}
+          onChange={(e) => {
+            setQuery(e.target.value);
+            onValueChange?.(e.target.value);
+          }}
+          onFocus={() => setOpen(true)}
+        />
+        {open && <div data-testid="currency-popup">{children}</div>}
+      </div>
+    );
+  }
+  const stub = (props: { children?: React.ReactNode }) => <>{props.children}</>;
+  function CurrencyList({ items }: { items: string[] }) {
+    return (
+      <>
+        {items.map((c: string) => (
+          <div key={c} data-testid={`currency-item-${c}`}>{c}</div>
+        ))}
+      </>
+    );
+  }
+  return {
+    Autocomplete: {
+      Root,
+      InputGroup: stub,
+      Input: ({ placeholder }: { placeholder?: string }) => (
+        <input data-testid="currency-input-inner" placeholder={placeholder} />
+      ),
+      Trigger: stub,
+      Clear: stub,
+      Portal: stub,
+      Positioner: stub,
+      Popup: stub,
+      List: stub,
+      Item: ({ value, children }: { value: string; children: React.ReactNode }) => (
+        <div data-testid={`ac-item-${value}`}>{children}</div>
+      ),
+      Empty: stub,
+      useFilteredItems: (items: string[]) => items,
+    },
+  };
+});
+
+// ── Helpers ──────────────────────────────────────────────────────────────────
+const makeGroup = (reference: string) => ({
+  reference,
+  currencies: [
+    { currency: 'BRL', incoming_value: 5000, expense_value: 1500, net_income: 3500 },
+  ],
+});
+
+const defaultHooks = () => {
+  (useIncomings as jest.Mock).mockReturnValue({ deleteByReferenceMutation: jest.fn() });
+  (useExpenses as jest.Mock).mockReturnValue({ deleteByReferenceMutation: jest.fn() });
+  (useExchangeRates as jest.Mock).mockReturnValue({ data: null });
+};
+
+// ── Tests ─────────────────────────────────────────────────────────────────────
+describe('List Component', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    defaultHooks();
   });
 
-  describe('Data Fetching', () => {
-    it('should show loading state initially', () => {
+  // ── Loading ────────────────────────────────────────────────────────────────
+  describe('Loading state', () => {
+    it('renders the loading indicator while data is fetching', () => {
       (useIncomingsExpensesTransactionsList as jest.Mock).mockReturnValue({
         data: null,
         isLoading: true,
       });
-
       render(<List />);
-
       expect(screen.getByTestId('loading')).toBeInTheDocument();
-    });
-
-    it('should render data when loaded', async () => {
-      (useIncomingsExpensesTransactionsList as jest.Mock).mockReturnValue({
-        data: mockData,
-        isLoading: false,
-      });
-
-      render(<List />);
-
-      await waitFor(() => {
-        expect(screen.getByTestId('table')).toBeInTheDocument();
-      });
-    });
-
-    it('should show no data message when data is empty', async () => {
-      (useIncomingsExpensesTransactionsList as jest.Mock).mockReturnValue({
-        data: [],
-        isLoading: false,
-      });
-
-      render(<List />);
-
-      await waitFor(() => {
-        expect(screen.getByText('No data')).toBeInTheDocument();
-      });
     });
   });
 
-  describe('Table Rendering', () => {
-    it('should render table headers correctly', async () => {
+  // ── Empty ──────────────────────────────────────────────────────────────────
+  describe('Empty state', () => {
+    it('shows the empty message when there are no records', () => {
       (useIncomingsExpensesTransactionsList as jest.Mock).mockReturnValue({
-        data: mockData,
+        data: { data: [], totalElements: 0 },
         isLoading: false,
       });
-
       render(<List />);
-
-      await waitFor(() => {
-        expect(screen.getByText('Reference')).toBeInTheDocument();
-        expect(screen.getByText('Incomings')).toBeInTheDocument();
-        expect(screen.getByText('Expenses')).toBeInTheDocument();
-        expect(screen.getByText('Net Income')).toBeInTheDocument();
-      });
+      expect(screen.getByText('list.empty')).toBeInTheDocument();
     });
+  });
 
-    it('should render data rows correctly', async () => {
+  // ── Rendering ──────────────────────────────────────────────────────────────
+  describe('Data rendering', () => {
+    it('renders a card for each reference group', async () => {
       (useIncomingsExpensesTransactionsList as jest.Mock).mockReturnValue({
-        data: mockData,
+        data: {
+          data: [makeGroup('01/2024'), makeGroup('02/2024')],
+          totalElements: 2,
+        },
         isLoading: false,
       });
-
       render(<List />);
-
       await waitFor(() => {
         expect(screen.getByText('01/2024')).toBeInTheDocument();
         expect(screen.getByText('02/2024')).toBeInTheDocument();
       });
     });
 
-    it('should display correct values', async () => {
+    it('shows the currency code for each currency row', async () => {
       (useIncomingsExpensesTransactionsList as jest.Mock).mockReturnValue({
-        data: mockData,
+        data: { data: [makeGroup('01/2024')], totalElements: 1 },
         isLoading: false,
       });
-
       render(<List />);
-
       await waitFor(() => {
-        expect(screen.getByText('5000')).toBeInTheDocument();
-        expect(screen.getByText('1500')).toBeInTheDocument();
-        expect(screen.getByText('3500')).toBeInTheDocument();
+        expect(screen.getByText(/BRL/)).toBeInTheDocument();
+      });
+    });
+
+    it('renders the pagination component', async () => {
+      (useIncomingsExpensesTransactionsList as jest.Mock).mockReturnValue({
+        data: { data: [makeGroup('01/2024')], totalElements: 1 },
+        isLoading: false,
+      });
+      render(<List />);
+      await waitFor(() => {
+        expect(screen.getByTestId('pagination')).toBeInTheDocument();
       });
     });
   });
 
-  describe('User Interactions', () => {
-    it('should redirect to details page on row click', async () => {
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
-      const { redirect } = require('next/navigation');
+  // ── Navigation ─────────────────────────────────────────────────────────────
+  describe('Navigation', () => {
+    it('navigates to the details page when the reference is clicked', async () => {
       (useIncomingsExpensesTransactionsList as jest.Mock).mockReturnValue({
-        data: mockData,
+        data: { data: [makeGroup('01/2024')], totalElements: 1 },
+        isLoading: false,
+      });
+      render(<List />);
+      await userEvent.click(screen.getByText('01/2024'));
+      expect(mockPush).toHaveBeenCalledWith('/details/01%2F2024');
+    });
+  });
+
+  // ── Delete ─────────────────────────────────────────────────────────────────
+  describe('Delete reference', () => {
+    it('opens the delete dialog when the delete icon is clicked', async () => {
+      (useIncomingsExpensesTransactionsList as jest.Mock).mockReturnValue({
+        data: { data: [makeGroup('01/2024')], totalElements: 1 },
+        isLoading: false,
+      });
+      render(<List />);
+      await userEvent.click(screen.getByTestId('DeleteForeverIcon'));
+      await waitFor(() => {
+        expect(screen.getByTestId('delete-dialog')).toBeInTheDocument();
+        expect(screen.getByTestId('delete-ref')).toHaveTextContent('01/2024');
+      });
+    });
+
+    it('calls both delete mutations on confirm', async () => {
+      const deleteIncomings = jest.fn().mockResolvedValue(undefined);
+      const deleteExpenses = jest.fn().mockResolvedValue(undefined);
+      (useIncomings as jest.Mock).mockReturnValue({ deleteByReferenceMutation: deleteIncomings });
+      (useExpenses as jest.Mock).mockReturnValue({ deleteByReferenceMutation: deleteExpenses });
+      (useIncomingsExpensesTransactionsList as jest.Mock).mockReturnValue({
+        data: { data: [makeGroup('01/2024')], totalElements: 1 },
         isLoading: false,
       });
 
       render(<List />);
+      await userEvent.click(screen.getByTestId('DeleteForeverIcon'));
+      await userEvent.click(screen.getByTestId('confirm-delete'));
 
       await waitFor(() => {
-        const row = screen.getByText('01/2024').closest('tr');
-        if (row) {
-          userEvent.click(row);
-          expect(redirect).toHaveBeenCalledWith('/details/01%2F2024');
-        }
+        expect(deleteIncomings).toHaveBeenCalledWith('01/2024');
+        expect(deleteExpenses).toHaveBeenCalledWith('01/2024');
+      });
+    });
+  });
+
+  // ── Currency autocomplete ──────────────────────────────────────────────────
+  describe('Currency autocomplete', () => {
+    it('renders the currency input', async () => {
+      (useIncomingsExpensesTransactionsList as jest.Mock).mockReturnValue({
+        data: { data: [makeGroup('01/2024')], totalElements: 1 },
+        isLoading: false,
+      });
+      render(<List />);
+      await waitFor(() => {
+        expect(screen.getByTestId('currency-input')).toBeInTheDocument();
       });
     });
   });

@@ -167,7 +167,7 @@ describe('Details Component', () => {
       expect(screen.getByTestId('loading')).toBeInTheDocument();
     });
 
-    it('should handle empty data', async () => {
+    it('should handle empty data without crashing', async () => {
       (useIncomings as jest.Mock).mockReturnValue({
         data: [],
         isLoading: false,
@@ -181,9 +181,12 @@ describe('Details Component', () => {
 
       render(<Details />);
 
+      // With no data, allCurrencies is empty so no sections render.
+      // The page should still show the reference date and back button.
       await waitFor(() => {
+        expect(screen.getByTestId('reference-date')).toBeInTheDocument();
         const cardContainers = screen.queryAllByTestId('card-container');
-        expect(cardContainers).toHaveLength(2);
+        expect(cardContainers).toHaveLength(0);
       });
     });
   });
@@ -302,14 +305,15 @@ describe('Details Component', () => {
       });
     });
 
-    it('should render section headers', async () => {
+    it('should render section headers when data is present', async () => {
+      // Section headers only appear when there is data — allCurrencies drives the loop
       (useIncomings as jest.Mock).mockReturnValue({
-        data: [],
+        data: [{ id: 1, reference: '01/2024', origin: 'Salary', value: 5000 }],
         isLoading: false,
         deleteMutation: jest.fn(),
       });
       (useExpenses as jest.Mock).mockReturnValue({
-        data: [],
+        data: [{ id: 1, reference: '01/2024', destination: 'Rent', value: 1500 }],
         isLoading: false,
         deleteMutation: jest.fn(),
       });
@@ -317,19 +321,22 @@ describe('Details Component', () => {
       render(<Details />);
 
       await waitFor(() => {
-        expect(screen.getByText('details.incomings')).toBeInTheDocument();
-        expect(screen.getByText('details.expenses')).toBeInTheDocument();
+        // Both headers render inside the currency group (currency defaults to BRL)
+        expect(screen.getAllByText(/details\.incomings/).length).toBeGreaterThan(0);
+        expect(screen.getAllByText(/details\.expenses/).length).toBeGreaterThan(0);
       });
     });
 
-    it('should render card containers', async () => {
+    it('should render card containers when data is present', async () => {
+      // TransactionDetailsList renders CardContainer (mocked as card-container).
+      // One container per currency group section that has items.
       (useIncomings as jest.Mock).mockReturnValue({
-        data: [],
+        data: [{ id: 1, reference: '01/2024', origin: 'Salary', value: 5000 }],
         isLoading: false,
         deleteMutation: jest.fn(),
       });
       (useExpenses as jest.Mock).mockReturnValue({
-        data: [],
+        data: [{ id: 1, reference: '01/2024', destination: 'Rent', value: 1500 }],
         isLoading: false,
         deleteMutation: jest.fn(),
       });
@@ -338,6 +345,7 @@ describe('Details Component', () => {
 
       await waitFor(() => {
         const cardContainers = screen.getAllByTestId('card-container');
+        // Both incomings and expenses have data → 2 TransactionDetailsList → 2 containers
         expect(cardContainers).toHaveLength(2);
       });
     });
