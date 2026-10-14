@@ -8,14 +8,18 @@ import { z } from "zod";
 import { useFormHandler } from "../useFormHandler";
 import CommonFields from "../CommonFields/CommonFields";
 
-const incomingSchema = z.object({
-  origin: z.string().min(1, "Origin is required"),
-  value: z.number().min(0, "Value must be positive"),
-  reference: z.string().min(1, "Reference is required"),
-});
+function useIncomingSchema() {
+  const { formatMessage } = useIntl();
+  return z.object({
+    origin: z.string().min(1, formatMessage({ id: "validation.required.origin" })),
+    value: z.number().min(0, formatMessage({ id: "validation.positive.value" })),
+    reference: z.string().min(1, formatMessage({ id: "validation.required.reference" })),
+  });
+}
 
-export default function IncomingForm({ id, defaultValues, onSuccess }: { id?: string; defaultValues?: z.infer<typeof incomingSchema>; onSuccess?: () => void }) {
+export default function IncomingForm({ id, defaultValues, onSuccess }: { id?: string; defaultValues?: { origin: string; value: number; reference: string }; onSuccess?: () => void }) {
   const { formatMessage } = useIntl()
+  const incomingSchema = useIncomingSchema();
   const { createMutation, isCreating, updateMutation, isUpdating } = useIncomings()
   const { register, handleSubmit, getErrorMessage } = useFormHandler(
       incomingSchema,

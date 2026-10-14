@@ -73,6 +73,15 @@ export const pt: Record<string, string> = {
   "profile.saveSuccess": "Perfil salvo com sucesso!",
   "profile.changePassword": "Alterar senha",
 
+  // Form validation
+  "validation.required.origin": "Origem é obrigatória",
+  "validation.required.destination": "Destino é obrigatório",
+  "validation.required.reference": "Referência é obrigatória",
+  "validation.positive.value": "Valor deve ser positivo",
+
+  // Header
+  "header.logout": "Sair",
+
   // Change password modal
   "changePassword.title": "Alterar senha",
   "changePassword.newPassword": "Nova senha",

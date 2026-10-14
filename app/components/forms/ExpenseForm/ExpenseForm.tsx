@@ -9,11 +9,14 @@ import Input from "../../ui/Input/Input";
 import { useFormHandler } from "../useFormHandler";
 import CommonFields from "../CommonFields/CommonFields";
 
-const expenseSchema = z.object({
-  destination: z.string().min(1, "Destination is required"),
-  value: z.number().min(0, "Value must be positive"),
-  reference: z.string().min(1, "Reference is required"),
-});
+function useExpenseSchema() {
+  const { formatMessage } = useIntl();
+  return z.object({
+    destination: z.string().min(1, formatMessage({ id: "validation.required.destination" })),
+    value: z.number().min(0, formatMessage({ id: "validation.positive.value" })),
+    reference: z.string().min(1, formatMessage({ id: "validation.required.reference" })),
+  });
+}
 
 export default function ExpenseForm({
   id,
@@ -21,10 +24,11 @@ export default function ExpenseForm({
   onSuccess,
 }: {
   id?: string;
-  defaultValues?: z.infer<typeof expenseSchema>;
+  defaultValues?: { destination: string; value: number; reference: string };
   onSuccess?: () => void;
 }) {
   const { formatMessage } = useIntl();
+  const expenseSchema = useExpenseSchema();
   const {
     createMutation,
     isCreating,
