@@ -10,7 +10,7 @@ import Pagination from "@/app/components/ui/Pagination/Pagination";
 import { DeleteForever } from "@mui/icons-material";
 import { Tooltip } from "@mui/material";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { useIntl } from "react-intl";
 import { DeleteReferenceDialog } from "./DeleteReferenceDialog";
 import {
@@ -19,7 +19,25 @@ import {
   formatCurrency,
   SUPPORTED_CURRENCIES,
 } from "@/app/lib/currency";
+import { Autocomplete } from "@developmentsnil/awake-ui/autocomplete";
 import "./styles.css";
+
+const ORIGINAL_VALUE = "";
+
+
+// Sub-componente necessário: useFilteredItems precisa estar dentro do contexto do Root
+function CurrencyList({ items }: { items: string[] }) {
+  const filtered = Autocomplete.useFilteredItems(items);
+  return (
+    <>
+      {filtered.map((c) => (
+        <Autocomplete.Item key={c} value={c}>
+          {getCurrencyFlag(c)} {c}
+        </Autocomplete.Item>
+      ))}
+    </>
+  );
+}
 
 export default function List() {
   const { formatMessage } = useIntl();
@@ -27,28 +45,14 @@ export default function List() {
   const [deletingRef, setDeletingRef] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [displayCurrency, setDisplayCurrency] = useState<string | null>(null);
-  const [pickerOpen, setPickerOpen] = useState(false);
-  const [query, setQuery] = useState("");
-  const pickerRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    function handleClickOutside(e: MouseEvent) {
-      if (pickerRef.current && !pickerRef.current.contains(e.target as Node)) {
-        setPickerOpen(false);
-        setQuery("");
-      }
-    }
-    if (pickerOpen) document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [pickerOpen]);
-
-  const filteredCurrencies = useMemo(
-    () =>
-      SUPPORTED_CURRENCIES.filter((c) =>
-        c.toLowerCase().includes(query.toLowerCase())
-      ),
-    [query]
-  );
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const handleCurrencyChange = useCallback((value: string) => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      setDisplayCurrency(value || null);
+    }, 400);
+  }, []);
 
   const { data, isLoading } = useIncomingsExpensesTransactionsList(currentPage);
   const { deleteByReferenceMutation: deleteIncomings } = useIncomings();
@@ -71,10 +75,20 @@ export default function List() {
 
   const { data: rates } = useExchangeRates(displayCurrency ?? "", targetCurrencies);
 
+  // items: strings simples (códigos) — o Item renderiza a label com bandeira
+  const currencyItems = useMemo(
+    () => SUPPORTED_CURRENCIES,
+    []
+  );
+
   if (isLoading) return <Loading />;
 
   if (!data || data.totalElements === 0) {
-    return <div className="flex items-center justify-center h-full">{formatMessage({ id: "list.empty" })}</div>;
+    return (
+      <div className="flex items-center justify-center h-full">
+        {formatMessage({ id: "list.empty" })}
+      </div>
+    );
   }
 
   const totalPages = Math.ceil(data.totalElements / PAGE_SIZE);
@@ -93,57 +107,37 @@ export default function List() {
   return (
     <div className="flex flex-col gap-3 p-3">
 
-      {/* Botão de conversão */}
+      {/* Seletor de moeda de conversão */}
       <div className="flex justify-end px-1">
-        <div ref={pickerRef} className="relative">
-          {pickerOpen ? (
-            <div className="currency-search-wrapper">
-              <input
-                autoFocus
-                className="currency-search-input"
-                placeholder={formatMessage({ id: "list.currency.searchPlaceholder" })}
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                onKeyDown={(e) => e.key === "Escape" && (setPickerOpen(false), setQuery(""))}
-              />
-              {filteredCurrencies.length > 0 && (
-                <div className="currency-picker-popup">
-                  {displayCurrency && (
-                    <button
-                      className="currency-picker-item"
-                      onClick={() => { setDisplayCurrency(null); setPickerOpen(false); setQuery(""); }}
-                    >
-                      {formatMessage({ id: "list.currency.original" })}
-                    </button>
-                  )}
-                  {filteredCurrencies.map((c) => (
-                    <button
-                      key={c}
-                      className={`currency-picker-item ${displayCurrency === c ? "currency-picker-item--active" : ""}`}
-                      onClick={() => { setDisplayCurrency(c); setPickerOpen(false); setQuery(""); }}
-                    >
-                      {getCurrencyFlag(c)} {c}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-          ) : (
-            <button
-              className={`currency-convert-trigger ${converting ? "currency-convert-trigger--active" : ""}`}
-              onClick={() => {
-                if (converting) { setDisplayCurrency(null); }
-                else { setPickerOpen(true); }
-              }}
-            >
-              <span className="currency-convert-icon">💱</span>
-              {converting && displayCurrency && (
-                <span className="currency-convert-label">
-                  {getCurrencyFlag(displayCurrency)} {displayCurrency}
-                </span>
-              )}
-            </button>
-          )}
+        <div className="w-44">
+        <Autocomplete.Root
+          items={currencyItems}
+          onValueChange={handleCurrencyChange}
+        >
+          <Autocomplete.InputGroup>
+            <Autocomplete.Input
+              placeholder={
+                converting && displayCurrency
+                  ? `${getCurrencyFlag(displayCurrency)} ${displayCurrency}`
+                  : formatMessage({ id: "list.currency.searchPlaceholder" })
+              }
+            />
+            <Autocomplete.Clear />
+            <Autocomplete.Trigger>▾</Autocomplete.Trigger>
+          </Autocomplete.InputGroup>
+          <Autocomplete.Portal>
+            <Autocomplete.Positioner>
+              <Autocomplete.Popup>
+                <Autocomplete.List>
+                  <CurrencyList items={currencyItems} />
+                </Autocomplete.List>
+                <Autocomplete.Empty>
+                  {formatMessage({ id: "list.currency.noResults" })}
+                </Autocomplete.Empty>
+              </Autocomplete.Popup>
+            </Autocomplete.Positioner>
+          </Autocomplete.Portal>
+        </Autocomplete.Root>
         </div>
       </div>
 
@@ -161,7 +155,11 @@ export default function List() {
               {group.reference}
             </span>
 
-            <Tooltip title={formatMessage({ id: "list.deleteRef.tooltip" }, { reference: group.reference })} arrow placement="top">
+            <Tooltip
+              title={formatMessage({ id: "list.deleteRef.tooltip" }, { reference: group.reference })}
+              arrow
+              placement="top"
+            >
               <DeleteForever
                 className="text-gray-400 hover:text-red-500 cursor-pointer transition-colors"
                 onClick={(e) => {

@@ -56,6 +56,7 @@ export const pt: Record<string, string> = {
   "list.empty": "Sem dados",
   "list.currency.searchPlaceholder": "USD, BRL…",
   "list.currency.original": "— Original",
+  "list.currency.noResults": "Nenhuma moeda encontrada",
   "list.currency.unavailable": "Taxa indisponível para algumas moedas",
   "list.deleteRef.tooltip": "Deletar todas as transações de {reference}",
   "details.net": "Saldo",
