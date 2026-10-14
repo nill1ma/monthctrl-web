@@ -6,6 +6,7 @@ import "./styles.css";
 import { usePathname } from "next/navigation";
 import ToggleSwitch from "@/app/components/ui/ToggleSwitch/ToggleSwitch";
 import { useLocale, type Locale } from "@/app/i18n/LocaleContext";
+import { useIntl } from "react-intl";
 
 const LOCALES: { value: Locale; label: string }[] = [
   { value: "en", label: "EN" },
@@ -15,6 +16,7 @@ const LOCALES: { value: Locale; label: string }[] = [
 
 export default function Header() {
   const { locale, setLocale } = useLocale();
+  const { formatMessage } = useIntl();
   const pathname = usePathname();
   const isLoggedIn = pathname !== "/login";
 
@@ -41,7 +43,7 @@ export default function Header() {
         <form action={handleLogout}>
           {isLoggedIn && (
             <Button variant="secondary" type="submit">
-              Logout
+              {formatMessage({ id: "header.logout" })}
             </Button>
           )}
         </form>
