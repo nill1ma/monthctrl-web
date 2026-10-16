@@ -73,7 +73,7 @@ async function runI18nAgent() {
   console.log('⏳ Analisando strings com IA...\n')
 
   const { text } = await generateText({
-    model: google('gemini-3.8-flash'),
+    model: google('gemini-1.5-flash'),
     system: `Você é um especialista em internacionalização (i18n) de aplicações React com react-intl.
 
 Analise os componentes abaixo e identifique strings hardcoded visíveis ao usuário que deveriam estar nos arquivos de tradução.
