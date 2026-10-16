@@ -51,3 +51,39 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 - Commit messages in English, imperative, with a clear scope: `fix(i18n): add missing es translations for details.net`.
 - Do not commit `.env.local` or any credentials.
+
+## AI Agents (scripts/)
+
+The project has two automation scripts powered by Google Gemini (`gemini-2.5-flash`).
+
+### `scripts/lint-agent.ts` — Local lint analysis
+
+Runs ESLint on `app/` and `e2e/`, reads code snippets around each warning, and asks the AI to explain every problem and suggest a fix.
+
+```bash
+npm run lint:agent        # analyse app/ and e2e/
+npm run lint:agent:src    # analyse app/ only
+```
+
+Requires `GOOGLE_GENERATIVE_AI_API_KEY` in `.env.local`.
+
+### `scripts/pr-agent.ts` — Automated PR review
+
+Runs automatically on every PR via GitHub Actions (`.github/workflows/pr-review.yml`). For each PR it:
+
+1. Lists the changed `.ts` / `.tsx` / `.js` / `.jsx` files via `git diff`.
+2. Runs ESLint only on those files.
+3. Sends the lint results + code snippets to Gemini, which generates a Markdown report in Portuguese.
+4. Queries the Vercel API for the latest preview deploy status (READY / ERROR / BUILDING).
+5. Posts a single comment on the PR with both the lint report and the Vercel status.
+
+**Required GitHub secrets** (Settings → Secrets and variables → Actions):
+
+| Secret | Description |
+|---|---|
+| `GOOGLE_GENERATIVE_AI_API_KEY` | Google AI Studio key (free tier, 1 500 req/day) |
+| `GITHUB_TOKEN` | Injected automatically by GitHub Actions — no manual setup |
+| `VERCEL_TOKEN` | Vercel account token (Account Settings → Tokens) |
+| `VERCEL_PROJECT_ID` | Found in the Vercel project settings (project-specific) |
+
+`VERCEL_TOKEN` is reusable across projects; only `VERCEL_PROJECT_ID` changes per project.
