@@ -58,19 +58,29 @@ export default function TransactionFormPage({
         </Button>
       </Tooltip>
       {mode === "create" && (
-        <nav>
-          <ul className="tabs">
-            <li
-              className={`tab ${controlTab === "incomings" ? "active" : ""}`}
-              onClick={() => setControlTab("incomings")}
-            >
-              <FormattedMessage id="create.update.tab.incomings" />
+        <nav aria-label={formatMessage({ id: "create.update.tab.nav.label" })}>
+          <ul className="tabs" role="tablist">
+            <li role="presentation">
+              <button
+                type="button"
+                role="tab"
+                aria-selected={controlTab === "incomings"}
+                className={`tab ${controlTab === "incomings" ? "active" : ""}`}
+                onClick={() => setControlTab("incomings")}
+              >
+                <FormattedMessage id="create.update.tab.incomings" />
+              </button>
             </li>
-            <li
-              className={`tab ${controlTab === "expenses" ? "active" : ""}`}
-              onClick={() => setControlTab("expenses")}
-            >
-              <FormattedMessage id="create.update.tab.expenses" />
+            <li role="presentation">
+              <button
+                type="button"
+                role="tab"
+                aria-selected={controlTab === "expenses"}
+                className={`tab ${controlTab === "expenses" ? "active" : ""}`}
+                onClick={() => setControlTab("expenses")}
+              >
+                <FormattedMessage id="create.update.tab.expenses" />
+              </button>
             </li>
           </ul>
         </nav>

@@ -25,6 +25,7 @@ export const es: Record<string, string> = {
   "create.update.reference": "Referencia",
   "create.update.value": "Valor",
   "create.update.submit": "Enviar",
+  "create.update.tab.nav.label": "Tipo de transacción",
   "create.update.tab.incomings": "Ingresos",
   "create.update.tab.expenses": "Gastos",
   "create.update.goToPrevious.button": "Volver",
