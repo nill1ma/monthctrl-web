@@ -1,1 +1,2 @@
 npx tsx scripts/a11y-agent.ts
+npx tsx scripts/i18n-agent.ts
