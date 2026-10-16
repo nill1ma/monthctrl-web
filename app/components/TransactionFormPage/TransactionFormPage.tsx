@@ -88,7 +88,7 @@ export default function TransactionFormPage({
 
       <h1 className="title">
         <FormattedMessage id={titleId} />
-      </h1>
+      </h1> 
 
       {activeType === "incomings" ? (
         <IncomingForm

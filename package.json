@@ -14,6 +14,7 @@
     "lint:agent": "tsx scripts/lint-agent.ts",
     "a11y:agent": "tsx scripts/a11y-agent.ts",
     "i18n:agent": "tsx scripts/i18n-agent.ts",
+    "orchestrator": "tsx scripts/orchestrator.ts",
     "lint:agent:components": "tsx scripts/lint-agent.ts src/components",
     "prepare": "husky"
   },
