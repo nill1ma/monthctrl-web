@@ -2,8 +2,6 @@
  * i18n Agent — detecta strings hardcoded visíveis em JSX nos arquivos staged
  * Roda automaticamente no pre-commit via Husky. Nunca bloqueia o commit.
  */
-import { config } from 'dotenv'
-config({ path: '.env.local' })
 
 import { createGoogleGenerativeAI } from '@ai-sdk/google'
 import { generateText } from 'ai'
@@ -13,7 +11,7 @@ import { readFile } from 'fs/promises'
 import path from 'path'
 
 const execAsync = promisify(exec)
-const google = createGoogleGenerativeAI({ apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY })
+
 const PROJECT_ROOT = process.cwd()
 
 // ─── 1. Pega os arquivos .tsx staged ─────────────────────────────────────────
@@ -48,14 +46,14 @@ async function readFiles(files: string[]): Promise<{ file: string; content: stri
 
 // ─── 3. Agent principal ───────────────────────────────────────────────────────
 
-async function runI18nAgent() {
+export async function runI18nAgent(): Promise<void> {
   console.log('\n🌐 i18n Agent iniciado...\n')
 
   const stagedFiles = await getStagedFiles()
 
   if (stagedFiles.length === 0) {
     console.log('✅ Nenhum componente React no staged — nada a verificar.\n')
-    process.exit(0)
+    return
   }
 
   console.log(`📂 Componentes staged: ${stagedFiles.join(', ')}\n`)
@@ -63,7 +61,7 @@ async function runI18nAgent() {
   const filesContent = await readFiles(stagedFiles)
 
   if (filesContent.length === 0) {
-    process.exit(0)
+    return
   }
 
   const context = filesContent
@@ -72,6 +70,7 @@ async function runI18nAgent() {
 
   console.log('⏳ Analisando strings com IA...\n')
 
+  const google = createGoogleGenerativeAI({ apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY })
   const { text } = await generateText({
     model: google('gemini-1.5-flash'),
     system: `Você é um especialista em internacionalização (i18n) de aplicações React com react-intl.
@@ -107,12 +106,4 @@ Responda em português. Seja direto e objetivo.`,
   console.log(text)
   console.log('━'.repeat(60))
   console.log('\n⚠️  Nenhum arquivo foi alterado. Revise as strings acima com o time de produto.\n')
-
-  // Sempre exit 0 — nunca bloqueia o commit
-  process.exit(0)
 }
-
-runI18nAgent().catch(err => {
-  console.error('Erro no i18n Agent:', err)
-  process.exit(0) // erro no agent não bloqueia o commit
-})

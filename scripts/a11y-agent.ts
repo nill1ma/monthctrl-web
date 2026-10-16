@@ -2,8 +2,6 @@
  * A11y Agent — analisa componentes React staged para violações WCAG via ESLint + IA
  * Roda automaticamente no pre-commit via Husky.
  */
-import { config } from 'dotenv'
-config({ path: '.env.local' })
 
 import { createGoogleGenerativeAI } from '@ai-sdk/google'
 import { generateText } from 'ai'
@@ -13,7 +11,7 @@ import { readFile } from 'fs/promises'
 import path from 'path'
 
 const execAsync = promisify(exec)
-const google = createGoogleGenerativeAI({ apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY })
+
 const PROJECT_ROOT = process.cwd()
 
 // ─── 1. Pega os arquivos .tsx staged no git ───────────────────────────────────
@@ -95,14 +93,14 @@ ${snippet}
 
 // ─── 5. Agent principal ───────────────────────────────────────────────────────
 
-async function runA11yAgent() {
+export async function runA11yAgent(): Promise<{ hasErrors: boolean }> {
   console.log('\n♿ A11y Agent iniciado...\n')
 
   const stagedFiles = await getStagedFiles()
 
   if (stagedFiles.length === 0) {
     console.log('✅ Nenhum componente React no staged — commit liberado.\n')
-    process.exit(0)
+    return { hasErrors: false }
   }
 
   console.log(`📂 Componentes staged: ${stagedFiles.join(', ')}\n`)
@@ -111,7 +109,7 @@ async function runA11yAgent() {
 
   if (lintResults.length === 0) {
     console.log('✅ Nenhuma violação de acessibilidade encontrada — commit liberado.\n')
-    process.exit(0)
+    return { hasErrors: false }
   }
 
   const totalErrors = lintResults.reduce((a: number, r: any) => a + r.errorCount, 0)
@@ -122,6 +120,7 @@ async function runA11yAgent() {
 
   const context = await buildContext(lintResults)
 
+  const google = createGoogleGenerativeAI({ apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY })
   const { text } = await generateText({
     model: google('gemini-1.5-flash'),
     system: `Você é um especialista em acessibilidade web (WCAG 2.1 nível AA) e React/TypeScript.
@@ -141,14 +140,9 @@ Use emojis e seja direto. Responda em português.`,
   if (totalErrors > 0) {
     console.log(`\n🚫 Commit bloqueado: ${totalErrors} erro(s) crítico(s) de acessibilidade.`)
     console.log('   Corrija os erros acima antes de commitar.\n')
-    process.exit(1)
+    return { hasErrors: true }
   } else {
     console.log(`\n⚠️  Commit permitido com ${totalWarnings} warning(s). Considere corrigir em breve.\n`)
-    process.exit(0)
+    return { hasErrors: false }
   }
 }
-
-runA11yAgent().catch(err => {
-  console.error('⚠️  A11y Agent falhou (API indisponível). Commit liberado.')
-  process.exit(0)
-})
