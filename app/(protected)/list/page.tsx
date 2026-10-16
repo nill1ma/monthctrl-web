@@ -133,8 +133,7 @@ export default function List() {
                   <CurrencyList />
                 </Autocomplete.List>
                 <Autocomplete.Empty>
-                  {/* {formatMessage({ id: "list.currency.noResults" })} */}
-                  No results
+                  {formatMessage({ id: "list.currency.noResults" })}
                 </Autocomplete.Empty>
               </Autocomplete.Popup>
             </Autocomplete.Positioner>
