@@ -54,7 +54,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 ## AI Agents (scripts/)
 
-The project has two automation scripts powered by Google Gemini (`gemini-2.5-flash`).
+The project has automation scripts powered by Google Gemini (`gemini-1.5-flash`).
 
 ### `scripts/lint-agent.ts` — Local lint analysis
 
@@ -117,4 +117,30 @@ You can also run it manually:
 ```bash
 # Em: monthctrl-web/
 npm run a11y:agent
+```
+
+### `scripts/i18n-agent.ts` — Internationalization agent (pre-commit)
+
+Runs automatically on every `git commit` via Husky alongside the a11y agent. Reads staged `.tsx` / `.jsx` files in `app/` and sends them to Gemini to detect user-visible hardcoded strings that should be in the translation files.
+
+**What it detects:**
+- Literal text between JSX tags: `<p>Some text</p>`
+- Visible attributes with literal values: `placeholder="Type here"`, `aria-label="Close"`, `alt="Company logo"`
+- Template literals visible to the user
+
+**What it ignores:**
+- Existing translation calls: `formatMessage({ id: "..." })` and `<FormattedMessage id="..." />`
+- Class names, IDs, URLs, and route strings
+- Technical attribute values: `type="button"`, `variant="primary"`
+
+**Behaviour:**
+- ⚠️ Always advisory — **never blocks a commit**
+- Report is shown in the terminal; the team decides whether to translate
+
+Requires `GOOGLE_GENERATIVE_AI_API_KEY` in `.env.local`.
+
+You can also run it manually:
+```bash
+# Em: monthctrl-web/
+npm run i18n:agent
 ```
