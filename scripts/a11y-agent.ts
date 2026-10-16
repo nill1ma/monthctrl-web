@@ -35,7 +35,7 @@ async function getStagedFiles(): Promise<string[]> {
 
 async function runA11yLint(files: string[]) {
   if (files.length === 0) return []
-  const fileList = files.join(' ')
+  const fileList = files.map(f => `"${f}"`).join(' ')
   let stdout = ''
   try {
     const result = await execAsync(
