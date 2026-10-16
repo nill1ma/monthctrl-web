@@ -12,7 +12,9 @@
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "lint:agent": "tsx scripts/lint-agent.ts",
-    "lint:agent:components": "tsx scripts/lint-agent.ts src/components"
+    "a11y:agent": "tsx scripts/a11y-agent.ts",
+    "lint:agent:components": "tsx scripts/lint-agent.ts src/components",
+    "prepare": "husky"
   },
   "dependencies": {
     "@ai-sdk/google": "^4.0.98",
@@ -56,6 +58,7 @@
     "babel-jest": "^30.5.0",
     "eslint": "^9",
     "eslint-config-next": "16.3.2",
+    "husky": "^9.1.7",
     "jest": "^30.5.0",
     "jest-environment-jsdom": "^30.5.0",
     "tailwindcss": "^4",

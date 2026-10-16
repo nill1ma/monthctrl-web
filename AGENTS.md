@@ -87,3 +87,34 @@ Runs automatically on every PR via GitHub Actions (`.github/workflows/pr-review.
 | `VERCEL_PROJECT_ID` | Found in the Vercel project settings (project-specific) |
 
 `VERCEL_TOKEN` is reusable across projects; only `VERCEL_PROJECT_ID` changes per project.
+
+### `scripts/a11y-agent.ts` — Accessibility agent (pre-commit)
+
+Runs automatically on every `git commit` via Husky. Checks staged `.tsx` / `.jsx` files in `app/` for WCAG 2.1 AA violations using ESLint `jsx-a11y` rules, then sends the results to Gemini for a detailed report with before/after code fixes.
+
+**Rules enforced:**
+- `alt-text` — images must have descriptive alt text
+- `aria-props` / `aria-role` — valid ARIA attributes and roles
+- `interactive-supports-focus` — interactive elements must be focusable
+- `click-events-have-key-events` — click handlers need keyboard equivalents
+- `label-has-associated-control` — form labels must be linked to inputs
+- `anchor-is-valid` — anchors must have valid href or role
+
+**Behaviour:**
+- 🔴 Errors → commit is **blocked** until fixed
+- 🟡 Warnings → commit is allowed, report shown in terminal
+
+**Setup** (already configured in this repo):
+```bash
+npm install --save-dev husky
+npx husky init
+# .husky/pre-commit contains: npx tsx scripts/a11y-agent.ts
+```
+
+Requires `GOOGLE_GENERATIVE_AI_API_KEY` in `.env.local`.
+
+You can also run it manually:
+```bash
+# Em: monthctrl-web/
+npm run a11y:agent
+```
