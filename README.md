@@ -103,3 +103,4 @@ e2e/                          # Playwright tests
 ## Development
 
 See [`CLAUDE.md`](./CLAUDE.md) for code conventions, i18n patterns, CSS rules, and known pitfalls.
+# test
