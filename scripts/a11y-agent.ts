@@ -122,7 +122,7 @@ export async function runA11yAgent(): Promise<{ hasErrors: boolean }> {
 
   const google = createGoogleGenerativeAI({ apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY })
   const { text } = await generateText({
-    model: google('gemini-1.5-flash'),
+    model: google('gemini-3.8-flash'),
     system: `Você é um especialista em acessibilidade web (WCAG 2.1 nível AA) e React/TypeScript.
 Analise as violações de acessibilidade encontradas pelo ESLint e gere um relatório objetivo no terminal.
 Para cada violação: explique qual diretriz WCAG é violada, por que é importante, e mostre o código corrigido (antes/depois).
