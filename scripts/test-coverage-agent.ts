@@ -110,7 +110,7 @@ export async function runTestCoverageAgent(): Promise<{ hasErrors: boolean }> {
 
   const google = createGoogleGenerativeAI({ apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY })
   const { text } = await generateText({
-    model: google('gemini-3.8-flash'),
+    model: google('gemini-2.5-flash'),
     system: `Você é um engenheiro de software sênior especializado em testes em TypeScript/React com Jest.
 Para cada arquivo analisado:
 - Se não tem teste: identifique as funções/lógicas críticas e sugira os casos de teste mais importantes (edge cases, erros, caminhos alternativos).
