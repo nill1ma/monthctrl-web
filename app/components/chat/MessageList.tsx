@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
+import { useIntl } from 'react-intl'
 
 type Message = {
   id: string
@@ -14,6 +15,7 @@ type MessageListProps = {
 }
 
 export default function MessageList({ messages, isLoading }: MessageListProps) {
+  const { formatMessage } = useIntl()
   const bottomRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -26,7 +28,7 @@ export default function MessageList({ messages, isLoading }: MessageListProps) {
         <div>
           <p className="text-2xl mb-2">💬</p>
           <p className="text-sm text-gray-500 dark:text-gray-400">
-            Pergunte sobre suas receitas, despesas ou saldo de qualquer período.
+            {formatMessage({ id: 'chat.welcome' })}
           </p>
         </div>
       </div>

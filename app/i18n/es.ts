@@ -74,6 +74,17 @@ export const es: Record<string, string> = {
   "profile.saveSuccess": "¡Perfil guardado con éxito!",
   "profile.changePassword": "Cambiar contraseña",
 
+  // Chat widget
+  "chat.title": "Asistente Financiero",
+  "chat.subtitle": "Powered by Gemini",
+  "chat.placeholder": "Pregunta sobre tus finanzas...",
+  "chat.send": "Enviar",
+  "chat.loading": "...",
+  "chat.open": "Abrir asistente financiero",
+  "chat.close": "Cerrar asistente financiero",
+  "chat.error": "Error al conectar con el asistente. Inténtalo de nuevo.",
+  "chat.welcome": "Pregunta sobre tus ingresos, gastos o saldo de cualquier período.",
+
   // Form validation
   "validation.required.origin": "El origen es obligatorio",
   "validation.required.destination": "El destino es obligatorio",

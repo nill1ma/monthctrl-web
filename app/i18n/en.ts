@@ -74,6 +74,17 @@ export const en: Record<string, string> = {
   "profile.saveSuccess": "Profile saved successfully!",
   "profile.changePassword": "Change password",
 
+  // Chat widget
+  "chat.title": "Financial Assistant",
+  "chat.subtitle": "Powered by Gemini",
+  "chat.placeholder": "Ask about your finances...",
+  "chat.send": "Send",
+  "chat.loading": "...",
+  "chat.open": "Open financial assistant",
+  "chat.close": "Close financial assistant",
+  "chat.error": "Error connecting to assistant. Please try again.",
+  "chat.welcome": "Ask about your income, expenses or balance for any period.",
+
   // Form validation
   "validation.required.origin": "Origin is required",
   "validation.required.destination": "Destination is required",

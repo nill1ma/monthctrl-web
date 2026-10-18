@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef } from 'react'
+import { useIntl } from 'react-intl'
 import ChatInput from './ChatInput'
 import MessageList from './MessageList'
 
@@ -11,6 +12,7 @@ type Message = {
 }
 
 export default function ChatWidget() {
+  const { formatMessage } = useIntl()
   const [isOpen, setIsOpen] = useState(false)
   const [messages, setMessages] = useState<Message[]>([])
   const [isLoading, setIsLoading] = useState(false)
@@ -61,7 +63,7 @@ export default function ChatWidget() {
         setMessages(prev =>
           prev.map(m =>
             m.id === assistantId
-              ? { ...m, content: 'Erro ao conectar com o assistente. Tente novamente.' }
+              ? { ...m, content: formatMessage({ id: 'chat.error' }) }
               : m
           )
         )
@@ -76,7 +78,7 @@ export default function ChatWidget() {
       {/* Botão flutuante */}
       <button
         onClick={() => setIsOpen(prev => !prev)}
-        aria-label={isOpen ? 'Fechar assistente financeiro' : 'Abrir assistente financeiro'}
+        aria-label={formatMessage({ id: isOpen ? 'chat.close' : 'chat.open' })}
         className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-blue-600 text-white shadow-lg hover:bg-blue-700 transition-colors flex items-center justify-center text-2xl"
       >
         {isOpen ? '✕' : '💬'}
@@ -89,8 +91,12 @@ export default function ChatWidget() {
           <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700 flex items-center gap-2">
             <span className="text-lg">🤖</span>
             <div>
-              <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">Assistente Financeiro</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Powered by Gemini</p>
+              <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                {formatMessage({ id: 'chat.title' })}
+              </p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">
+                {formatMessage({ id: 'chat.subtitle' })}
+              </p>
             </div>
           </div>
 
