@@ -1,3 +1,5 @@
+window.HTMLElement.prototype.scrollIntoView = jest.fn()
+
 import { render, screen } from '@testing-library/react'
 import MessageList from './MessageList'
 
