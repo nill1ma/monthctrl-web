@@ -20,6 +20,7 @@ npm run test:e2e     # E2E tests (Playwright) — requires dev server running
 
 ### Routing (Next.js App Router)
 - `app/login/` — public authentication page
+- `app/api/chat/` — AI chat API route (POST, streams Gemini response)
 - `app/(protected)/` — protected routes (middleware redirects without session)
   - `list/` — records list grouped by reference period
   - `details/[reference]/` — period detail: incomings and expenses
@@ -40,6 +41,7 @@ app/
 ├── components/      # reusable components
 │   ├── ui/          # primitives (Button, Input, Pagination…)
 │   ├── forms/       # IncomingForm, ExpenseForm, LoginForm, CommonFields
+│   ├── chat/        # ChatWidget, ChatInput, MessageList
 │   └── TransactionDetailsList/
 ├── i18n/            # internationalization
 │   ├── en.ts / pt.ts / es.ts   # translations
