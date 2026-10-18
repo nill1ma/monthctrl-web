@@ -47,7 +47,7 @@ Exemplos: "Fevereiro de 2027" → "2027-02" | "março 2026" → "2026-03" | "out
     tools: {
       getAllPeriods: tool({
         description: 'Lista todos os períodos (meses) que o usuário tem registros financeiros.',
-        parameters: z.object({}),
+        inputSchema: z.object({}),
         execute: async () => {
           const [expensesRes, incomingsRes] = await Promise.all([
             supabase.from('expenses').select('reference').eq('user_id', user.id),
@@ -63,7 +63,7 @@ Exemplos: "Fevereiro de 2027" → "2027-02" | "março 2026" → "2026-03" | "out
 
       getExpensesByPeriod: tool({
         description: 'Busca todas as despesas de um período específico.',
-        parameters: z.object({
+        inputSchema: z.object({
           reference: z.string().describe('Período no formato YYYY-MM, ex: 2025-10'),
         }),
         execute: async ({ reference }) => {
@@ -80,7 +80,7 @@ Exemplos: "Fevereiro de 2027" → "2027-02" | "março 2026" → "2026-03" | "out
 
       getIncomingsByPeriod: tool({
         description: 'Busca todas as receitas de um período específico.',
-        parameters: z.object({
+        inputSchema: z.object({
           reference: z.string().describe('Período no formato YYYY-MM, ex: 2025-10'),
         }),
         execute: async ({ reference }) => {
