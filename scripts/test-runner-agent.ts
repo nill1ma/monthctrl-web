@@ -58,7 +58,7 @@ export async function runTestRunnerAgent(): Promise<{ hasErrors: boolean }> {
 
   const google = createGoogleGenerativeAI({ apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY })
   const { text } = await generateText({
-    model: google('gemini-1.5-flash'),
+    model: google('gemini-2.0-flash'),
     system: `Você é um engenheiro de software sênior especializado em debugging de testes em TypeScript/React.
 Analise as falhas de testes abaixo e gere um relatório objetivo.
 Para cada falha: identifique a causa raiz, explique por que o teste falhou e sugira a correção.

@@ -72,7 +72,7 @@ export async function runI18nAgent(): Promise<{ hasErrors: boolean }> {
 
   const google = createGoogleGenerativeAI({ apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY })
   const { text } = await generateText({
-    model: google('gemini-1.5-flash'),
+    model: google('gemini-2.0-flash'),
     system: `Você é um especialista em internacionalização (i18n) de aplicações React com react-intl.
 
 Analise os componentes abaixo e identifique strings hardcoded visíveis ao usuário que deveriam estar nos arquivos de tradução.

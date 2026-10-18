@@ -29,7 +29,7 @@ export async function POST(req: Request) {
   }
 
   const result = streamText({
-    model: google('gemini-1.5-flash'),
+    model: google('gemini-2.0-flash'),
     system: `Você é um assistente financeiro pessoal. Ajude o usuário a entender suas finanças
 com base nos dados reais das suas receitas e despesas. Seja direto, claro e use formatação
 simples. Quando mencionar valores, use o formato da moeda correspondente.
@@ -96,12 +96,6 @@ Exemplos: "Fevereiro de 2027" → "2027-02" | "março 2026" → "2026-03" | "out
       }),
     },
     maxSteps: 5,
-    onFinish: ({ text, toolCalls, toolResults, finishReason }) => {
-      console.log("[chat] finishReason:", finishReason)
-      console.log("[chat] text length:", text.length)
-      console.log("[chat] toolCalls:", JSON.stringify(toolCalls?.map(t => ({ name: t.toolName, args: t.args }))))
-      console.log("[chat] toolResults:", JSON.stringify(toolResults?.map(t => ({ name: t.toolName, result: t.result }))))
-    },
   })
 
   return result.toTextStreamResponse()
