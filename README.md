@@ -28,6 +28,7 @@ Personal finance tracking app. Log income and expenses grouped by reference peri
 - Create and edit income and expense records
 - Delete individual records or an entire period at once
 - User profile and password change
+- AI financial assistant — ask about income, expenses, or balance for any period (powered by Google Gemini)
 - Light / dark / system theme
 - English, Portuguese, and Spanish UI
 
@@ -45,6 +46,7 @@ Create `.env.local` at the project root:
 ```bash
 NEXT_PUBLIC_SUPABASE_URL=https://<your-project>.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=<your-anon-key>
+GOOGLE_GENERATIVE_AI_API_KEY=<your-google-ai-studio-key>
 ```
 
 For E2E tests, also add:
@@ -87,10 +89,13 @@ app/
 │   ├── create/               # new record
 │   ├── edit/[type]/[id]/     # edit a record
 │   └── profile/              # profile and password
+├── api/
+│   └── chat/                 # AI chat API route (Google Gemini)
 ├── login/                    # authentication
 ├── components/               # reusable components
 │   ├── ui/                   # Button, Input, Pagination…
 │   ├── forms/                # IncomingForm, ExpenseForm, LoginForm
+│   ├── chat/                 # ChatWidget, ChatInput, MessageList
 │   └── TransactionDetailsList/
 ├── services/                 # Supabase access (incomings, expenses, profiles…)
 ├── hooks/                    # React Query wrappers
@@ -98,6 +103,7 @@ app/
 ├── providers/                # ThemeProvider, ReactQueryProvider
 └── lib/                      # utilities (currency, auth)
 e2e/                          # Playwright tests
+scripts/                      # AI automation agents (Gemini)
 ```
 
 ## Development

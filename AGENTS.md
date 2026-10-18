@@ -54,7 +54,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 ## AI Agents (scripts/)
 
-The project has two automation scripts powered by Google Gemini (`gemini-2.5-flash`).
+The project has two automation scripts powered by Google Gemini (`gemini-3.8-flash`).
 
 ### `scripts/lint-agent.ts` — Local lint analysis
 
@@ -81,7 +81,7 @@ Runs automatically on every PR via GitHub Actions (`.github/workflows/pr-review.
 
 | Secret | Description |
 |---|---|
-| `GOOGLE_GENERATIVE_AI_API_KEY` | Google AI Studio key (free tier, 1 500 req/day) |
+| `GOOGLE_GENERATIVE_AI_API_KEY` | Google AI Studio key (free tier, 20 req/day) |
 | `GITHUB_TOKEN` | Injected automatically by GitHub Actions — no manual setup |
 | `VERCEL_TOKEN` | Vercel account token (Account Settings → Tokens) |
 | `VERCEL_PROJECT_ID` | Found in the Vercel project settings (project-specific) |
@@ -118,3 +118,20 @@ You can also run it manually:
 # Em: monthctrl-web/
 npm run a11y:agent
 ```
+### `scripts/orchestrator.ts` — Pre-commit orchestrator
+
+Runs automatically on every `git commit` via Husky. Coordinates the agents below in parallel and reports results. The commit is always released — agents are advisory, not blocking (except A11y errors).
+
+### `scripts/i18n-agent.ts` — i18n agent (pre-commit)
+
+Checks staged React components for hardcoded user-visible strings that bypass `react-intl`. Reports any string that should be a translation key.
+
+### `scripts/test-runner-agent.ts` — Test runner agent (pre-commit)
+
+Runs `npm test` on the full test suite and, if any tests fail, sends the output to Gemini for an explanation of the failures.
+
+### `scripts/test-coverage-agent.ts` — Test coverage agent (pre-commit)
+
+Analyses staged logic files (`app/lib/`, `app/hooks/`, `app/services/`) and identifies functions or branches without unit test coverage.
+
+
