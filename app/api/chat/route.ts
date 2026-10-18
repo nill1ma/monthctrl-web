@@ -29,7 +29,7 @@ export async function POST(req: Request) {
   }
 
   const result = streamText({
-    model: google('gemini-2.5-flash'),
+    model: google('gemini-3.8-flash'),
     system: `Você é um assistente financeiro pessoal. Ajude o usuário a entender suas finanças
 com base nos dados reais das suas receitas e despesas. Seja direto, claro e use formatação
 simples. Quando mencionar valores, use o formato da moeda correspondente.
