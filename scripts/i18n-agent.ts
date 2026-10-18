@@ -46,14 +46,14 @@ async function readFiles(files: string[]): Promise<{ file: string; content: stri
 
 // ─── 3. Agent principal ───────────────────────────────────────────────────────
 
-export async function runI18nAgent(): Promise<void> {
+export async function runI18nAgent(): Promise<{ hasErrors: boolean }> {
   console.log('\n🌐 i18n Agent iniciado...\n')
 
   const stagedFiles = await getStagedFiles()
 
   if (stagedFiles.length === 0) {
     console.log('✅ Nenhum componente React no staged — nada a verificar.\n')
-    return
+    return { hasErrors: false }
   }
 
   console.log(`📂 Componentes staged: ${stagedFiles.join(', ')}\n`)
@@ -61,7 +61,7 @@ export async function runI18nAgent(): Promise<void> {
   const filesContent = await readFiles(stagedFiles)
 
   if (filesContent.length === 0) {
-    return
+    return { hasErrors: false }
   }
 
   const context = filesContent
@@ -106,4 +106,6 @@ Responda em português. Seja direto e objetivo.`,
   console.log(text)
   console.log('━'.repeat(60))
   console.log('\n⚠️  Nenhum arquivo foi alterado. Revise as strings acima com o time de produto.\n')
+
+  return { hasErrors: false }
 }
