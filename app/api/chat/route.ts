@@ -1,5 +1,5 @@
 import { createGoogleGenerativeAI } from '@ai-sdk/google'
-import { streamText, tool } from 'ai'
+import { streamText, tool, isStepCount } from 'ai'
 import { z } from 'zod'
 import { createClient } from '@/app/lib/supabase'
 
@@ -95,7 +95,13 @@ Exemplos: "Fevereiro de 2027" → "2027-02" | "março 2026" → "2026-03" | "out
         },
       }),
     },
-    maxSteps: 5,
+    stopWhen: isStepCount(5),
+    onFinish: ({ text, finishReason, usage }) => {
+      console.log("[chat] finishReason:", finishReason)
+      console.log("[chat] text length:", text?.length)
+      console.log("[chat] text preview:", JSON.stringify(text?.slice(0, 200)))
+      console.log("[chat] usage:", JSON.stringify(usage))
+    },
   })
 
   return result.toTextStreamResponse()
