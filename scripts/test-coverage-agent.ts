@@ -69,17 +69,12 @@ async function readTestFile(testFile: string): Promise<string> {
 
 // ─── 5. Agent principal ───────────────────────────────────────────────────────
 
-export async function runTestCoverageAgent(): Promise<{ hasErrors: boolean }> {
-  console.log('\n🔍 Test Coverage Agent iniciado...\n')
-
+export async function runTestCoverageAgent(): Promise<{ hasErrors: boolean; status: string }> {
   const stagedFiles = await getStagedSourceFiles()
 
   if (stagedFiles.length === 0) {
-    console.log('✅ Nenhum arquivo de lógica no staged — nada a analisar.\n')
-    return { hasErrors: false }
+    return { hasErrors: false, status: 'No logic files staged — skipped.' }
   }
-
-  console.log(`📂 Arquivos de lógica staged: ${stagedFiles.join(', ')}\n`)
 
   const uncoveredFiles: string[] = []
   const partialFiles: { file: string; testFile: string }[] = []
@@ -101,12 +96,8 @@ export async function runTestCoverageAgent(): Promise<{ hasErrors: boolean }> {
   }
 
   if (uncoveredFiles.length === 0 && partialFiles.length === 0) {
-    console.log('✅ Todos os arquivos staged têm testes correspondentes.\n')
-    return { hasErrors: false }
+    return { hasErrors: false, status: `All ${stagedFiles.length} logic file(s) have corresponding tests.` }
   }
-
-  console.log(`📊 ${uncoveredFiles.length} arquivo(s) sem teste, ${partialFiles.length} com teste parcial`)
-  console.log('⏳ Analisando cobertura com IA...\n')
 
   const google = createGoogleGenerativeAI({ apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY })
   const { text } = await generateText({
@@ -126,12 +117,6 @@ Responda em português.`,
   console.log(text)
   console.log('━'.repeat(60))
 
-  if (uncoveredFiles.length > 0) {
-    console.log(`\n⚠️  ${uncoveredFiles.length} arquivo(s) crítico(s) sem nenhum teste:`)
-    uncoveredFiles.forEach(f => console.log(`   • ${f}`))
-    console.log('\n   Considere adicionar testes antes de commitar.\n')
-  }
-
-  // Coverage não bloqueia o commit — apenas avisa
-  return { hasErrors: false }
+  const missingMsg = uncoveredFiles.length > 0 ? `, ${uncoveredFiles.length} file(s) with no tests` : ''
+  return { hasErrors: false, status: `Coverage report generated${missingMsg} — advisory only.` }
 }

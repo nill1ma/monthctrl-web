@@ -142,14 +142,11 @@ ${snippet}
 
 // ─── 7. Agent principal ───────────────────────────────────────────────────────
 
-export async function runTypeAnyAgent(): Promise<{ hasErrors: boolean }> {
-  console.log('\n🔍 Type-Any Agent iniciado...\n')
-
+export async function runTypeAnyAgent(): Promise<{ hasErrors: boolean; status: string }> {
   const stagedFiles = await getStagedFiles()
 
   if (stagedFiles.length === 0) {
-    console.log('✅ Nenhum arquivo TypeScript staged.')
-    return { hasErrors: false }
+    return { hasErrors: false, status: 'No TypeScript files staged — skipped.' }
   }
 
   // Detecta `any` em todos os arquivos staged
@@ -175,13 +172,10 @@ export async function runTypeAnyAgent(): Promise<{ hasErrors: boolean }> {
   }
 
   if (results.length === 0) {
-    console.log('✅ Nenhum uso de `any` explícito encontrado.')
-    return { hasErrors: false }
+    return { hasErrors: false, status: `No explicit 'any' found across ${stagedFiles.length} TypeScript file(s).` }
   }
 
   const totalOccurrences = results.reduce((a, r) => a + r.occurrences.length, 0)
-  console.log(`⚠️  ${totalOccurrences} uso(s) de \`any\` em ${results.length} arquivo(s). Analisando com IA...`)
-
   const context = await buildContext(results)
 
   const { text } = await generateText({
@@ -199,14 +193,14 @@ Seja direto e prático. Responda em português. Use blocos de código formatados
     prompt: `Analise estes usos de \`any\` e sugira correções:\n${context}`,
   })
 
-  console.log('\n📋 Análise do Type-Any Agent:')
+  console.log('\n' + '─'.repeat(60))
+  console.log('🔍 TYPE-ANY REPORT')
   console.log('─'.repeat(60))
   console.log(text)
   console.log('─'.repeat(60))
-  console.log('\n⚠️  Corrija os usos de `any` antes de commitar (recomendado).')
 
-  // Advisory: reporta mas não bloqueia o commit
-  return { hasErrors: false }
+  // Advisory: reports but does not block the commit
+  return { hasErrors: false, status: `Found ${totalOccurrences} explicit 'any' in ${results.length} file(s) — advisory only. See report above.` }
 }
 
 runTypeAnyAgent().catch(err => {

@@ -46,29 +46,22 @@ async function readFiles(files: string[]): Promise<{ file: string; content: stri
 
 // ─── 3. Agent principal ───────────────────────────────────────────────────────
 
-export async function runI18nAgent(): Promise<{ hasErrors: boolean }> {
-  console.log('\n🌐 i18n Agent iniciado...\n')
-
+export async function runI18nAgent(): Promise<{ hasErrors: boolean; status: string }> {
   const stagedFiles = await getStagedFiles()
 
   if (stagedFiles.length === 0) {
-    console.log('✅ Nenhum componente React no staged — nada a verificar.\n')
-    return { hasErrors: false }
+    return { hasErrors: false, status: 'No React components staged — skipped.' }
   }
-
-  console.log(`📂 Componentes staged: ${stagedFiles.join(', ')}\n`)
 
   const filesContent = await readFiles(stagedFiles)
 
   if (filesContent.length === 0) {
-    return { hasErrors: false }
+    return { hasErrors: false, status: 'No React components staged — skipped.' }
   }
 
   const context = filesContent
     .map(({ file, content }) => `## ${file}\n\`\`\`tsx\n${content}\n\`\`\``)
     .join('\n\n')
-
-  console.log('⏳ Analisando strings com IA...\n')
 
   const google = createGoogleGenerativeAI({ apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY })
   const { text } = await generateText({
@@ -105,7 +98,5 @@ Responda em português. Seja direto e objetivo.`,
   console.log('━'.repeat(60))
   console.log(text)
   console.log('━'.repeat(60))
-  console.log('\n⚠️  Nenhum arquivo foi alterado. Revise as strings acima com o time de produto.\n')
-
-  return { hasErrors: false }
+  return { hasErrors: false, status: `i18n report generated for ${stagedFiles.length} file(s) — review hardcoded strings above.` }
 }
