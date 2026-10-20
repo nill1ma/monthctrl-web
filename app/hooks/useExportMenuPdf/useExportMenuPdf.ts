@@ -3,7 +3,7 @@
 import { buildExportPdfHtml, getReferencesInRange } from "@/app/lib/pdf";
 import { getDetailedTransactionsByReferences } from "@/app/services/incomings_expenses_transactions/incomings_expenses_transactions";
 import { useState } from "react";
-import { createBrowserClient } from "@/app/lib/supabase";
+import { createBrowserClient } from "@/app/lib/supabase-browser";
 import type { TransactionType } from "@/app/lib/pdf";
 
 export type ExportFilters = {
