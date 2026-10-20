@@ -3,7 +3,7 @@
 import { buildExportPdfHtml, getReferencesInRange } from "@/app/lib/pdf";
 import { getDetailedTransactionsByReferences } from "@/app/services/incomings_expenses_transactions/incomings_expenses_transactions";
 import { useState } from "react";
-import { createClient } from "@/app/lib/supabase";
+import { createBrowserClient } from "@/app/lib/supabase";
 import type { TransactionType } from "@/app/lib/pdf";
 
 export type ExportFilters = {
@@ -19,7 +19,7 @@ export function useExportMenuPdf() {
   async function exportPdf(filters: ExportFilters) {
     setIsExporting(true);
     try {
-      const supabase = await createClient();
+      const supabase = createBrowserClient();
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Usuário não autenticado");
 
