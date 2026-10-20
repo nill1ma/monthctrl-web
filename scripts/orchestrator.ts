@@ -5,15 +5,17 @@ import { runA11yAgent } from './a11y-agent'
 import { runI18nAgent } from './i18n-agent'
 import { runTestRunnerAgent } from './test-runner-agent'
 import { runTestCoverageAgent } from './test-coverage-agent'
+import { runTypeAnyAgent } from './type-any-agent'
 
 async function runOrchestrator() {
   console.log('\n🤖 Orchestrator iniciado...\n')
 
-  const [a11yResult, i18nResult, testRunnerResult, testCoverageResult] = await Promise.all([
+  const [a11yResult, i18nResult, testRunnerResult, testCoverageResult, typeAnyResult] = await Promise.all([
     runA11yAgent(),
     runI18nAgent(),
     runTestRunnerAgent(),
     runTestCoverageAgent(),
+    runTypeAnyAgent(),
   ])
 
   // test-coverage-agent é apenas consultivo — não bloqueia commit
