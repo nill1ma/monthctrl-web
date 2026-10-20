@@ -2,6 +2,7 @@
 import { PAGE_SIZE } from "@/app/constants/pagination";
 import { createClient } from "@/app/lib/supabase";
 import { CurrencyEntry, ReferenceGroup, ReferenceGroupResponse } from "./incomings_expenses_transactions.types";
+import type { DetailedTransaction } from "@/app/lib/pdf";
 
 export async function getIncomingsExpensesTransactions(page: number): Promise<ReferenceGroupResponse> {
   const supabase = await createClient();
@@ -55,4 +56,45 @@ export async function getIncomingsExpensesTransactions(page: number): Promise<Re
   }));
 
   return { data, totalElements };
+}
+
+export async function getDetailedTransactionsByReferences(
+  references: string[],
+  userId: string,
+): Promise<DetailedTransaction[]> {
+  const supabase = await createClient();
+
+  const [incomingsRes, expensesRes] = await Promise.all([
+    supabase
+      .from("incomings")
+      .select("reference, origin, value, currency")
+      .eq("user_id", userId)
+      .in("reference", references),
+    supabase
+      .from("expenses")
+      .select("reference, destination, value, currency")
+      .eq("user_id", userId)
+      .in("reference", references),
+  ]);
+
+  if (incomingsRes.error) throw incomingsRes.error;
+  if (expensesRes.error) throw expensesRes.error;
+
+  const incomingRows: DetailedTransaction[] = (incomingsRes.data ?? []).map((r) => ({
+    reference: r.reference,
+    description: r.origin,
+    value: r.value ?? 0,
+    currency: r.currency ?? "BRL",
+    type: "incoming",
+  }));
+
+  const expenseRows: DetailedTransaction[] = (expensesRes.data ?? []).map((r) => ({
+    reference: r.reference,
+    description: r.destination,
+    value: r.value ?? 0,
+    currency: r.currency ?? "BRL",
+    type: "expense",
+  }));
+
+  return [...incomingRows, ...expenseRows];
 }
