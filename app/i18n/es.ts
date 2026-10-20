@@ -45,6 +45,8 @@ export const es: Record<string, string> = {
   "details.delete.expense.tooltip": "Eliminar gasto",
   "details.goBack.button": "Ir a la lista",
   "details.goBack.button.tooltip": "Ir a la página de lista",
+  "details.export.label": "Exportar PDF de este mes",
+  "details.export.button": "Exportar PDF",
 
   // Delete confirmation dialog
   "delete.dialog.title": "Confirmar eliminación",
@@ -60,7 +62,21 @@ export const es: Record<string, string> = {
   "list.currency.noResults": "No se encontró ninguna moneda",
   "list.currency.unavailable": "Tasa no disponible para algunas monedas",
   "list.deleteRef.tooltip": "Eliminar todas las transacciones de {reference}",
+  "list.export.button": "Exportar",
+  "list.export.tooltip": "Exportar transacciones como PDF",
   "details.net": "Saldo",
+
+  // Export PDF modal
+  "export.modal.title": "Exportar PDF",
+  "export.modal.referenceStart": "Período — inicio",
+  "export.modal.referenceEnd": "Período — fin",
+  "export.modal.transactionType": "Tipo de transacción",
+  "export.modal.type.all": "Todos",
+  "export.modal.type.incoming": "Ingresos",
+  "export.modal.type.expense": "Gastos",
+  "export.modal.currencies": "Monedas",
+  "export.modal.currencies.hint": "Déjalo en blanco para incluir todas las monedas",
+  "export.modal.confirm": "Exportar",
 
   // Profile page
   "profile.title": "Perfil",
@@ -83,7 +99,7 @@ export const es: Record<string, string> = {
   "chat.open": "Abrir asistente financiero",
   "chat.close": "Cerrar asistente financiero",
   "chat.error": "Error al conectar con el asistente. Inténtalo de nuevo.",
-  "chat.welcome": "Pregunta sobre tus ingresos, gastos o saldo de cualquier período.",
+  "chat.welcome": "Pregunta sobre tus ingresos, gastos o saldo de cualquer período.",
 
   // Form validation
   "validation.required.origin": "El origen es obligatorio",

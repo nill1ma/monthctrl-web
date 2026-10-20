@@ -45,6 +45,8 @@ export const pt: Record<string, string> = {
   "details.delete.expense.tooltip": "Excluir saída",
   "details.goBack.button": "Ir para a lista",
   "details.goBack.button.tooltip": "Ir para a página de lista",
+  "details.export.label": "Exportar PDF deste mês",
+  "details.export.button": "Exportar PDF",
 
   // Delete confirmation dialog
   "delete.dialog.title": "Confirmar exclusão",
@@ -60,7 +62,21 @@ export const pt: Record<string, string> = {
   "list.currency.noResults": "Nenhuma moeda encontrada",
   "list.currency.unavailable": "Taxa indisponível para algumas moedas",
   "list.deleteRef.tooltip": "Deletar todas as transações de {reference}",
+  "list.export.button": "Exportar",
+  "list.export.tooltip": "Exportar transações como PDF",
   "details.net": "Saldo",
+
+  // Export PDF modal
+  "export.modal.title": "Exportar PDF",
+  "export.modal.referenceStart": "Período — início",
+  "export.modal.referenceEnd": "Período — fim",
+  "export.modal.transactionType": "Tipo de transação",
+  "export.modal.type.all": "Todos",
+  "export.modal.type.incoming": "Entradas",
+  "export.modal.type.expense": "Saídas",
+  "export.modal.currencies": "Moedas",
+  "export.modal.currencies.hint": "Deixe em branco para incluir todas as moedas",
+  "export.modal.confirm": "Exportar",
 
   // Profile page
   "profile.title": "Perfil",

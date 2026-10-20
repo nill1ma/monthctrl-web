@@ -6,9 +6,11 @@ import { useIncomingsExpensesTransactionsList } from "@/app/hooks/useIncomingsEx
 import { useIncomings } from "@/app/hooks/useIncomings/useIncomings";
 import { useExpenses } from "@/app/hooks/useExpenses/useExpenses";
 import { useExchangeRates } from "@/app/hooks/useExchangeRates/useExchangeRates";
+import { useExportMenuPdf } from "@/app/hooks/useExportMenuPdf/useExportMenuPdf";
+import { ExportPdfModal } from "@/app/components/ExportPdfModal/ExportPdfModal";
 import Pagination from "@/app/components/ui/Pagination/Pagination";
-import { DeleteForever } from "@mui/icons-material";
-import { Tooltip } from "@mui/material";
+import { DeleteForever, FileDownload } from "@mui/icons-material";
+import { CircularProgress, Tooltip } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { useIntl } from "react-intl";
@@ -46,6 +48,9 @@ export default function List() {
   const [deletingRef, setDeletingRef] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [displayCurrency, setDisplayCurrency] = useState<string | null>(null);
+  const [exportModalOpen, setExportModalOpen] = useState(false);
+
+  const { exportPdf, isExporting } = useExportMenuPdf();
 
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const handleCurrencyChange = useCallback((value: string) => {
@@ -65,6 +70,12 @@ export default function List() {
     const set = new Set<string>();
     data.data.forEach((group) => group.currencies.forEach((c) => set.add(c.currency)));
     return Array.from(set).sort();
+  }, [data]);
+
+  // All available references from the loaded data (sorted)
+  const availableReferences = useMemo(() => {
+    if (!data?.data) return [];
+    return data.data.map((g) => g.reference).sort((a, b) => a.localeCompare(b));
   }, [data]);
 
   const converting = displayCurrency !== null;
@@ -108,37 +119,52 @@ export default function List() {
   return (
     <div className="flex flex-col gap-3 p-3">
 
-      {/* Seletor de moeda de conversão */}
-      <div className="flex justify-end px-1">
+      {/* Toolbar: seletor de moeda + botão export */}
+      <div className="flex items-center justify-between px-1 gap-2">
+        <Tooltip title={formatMessage({ id: "list.export.tooltip" })} arrow placement="top">
+          <button
+            onClick={() => setExportModalOpen(true)}
+            disabled={isExporting}
+            className="flex items-center gap-1 text-sm px-3 py-1.5 rounded-lg border border-gray-300 hover:bg-gray-100 transition-colors disabled:opacity-50"
+          >
+            {isExporting ? (
+              <CircularProgress size={14} />
+            ) : (
+              <FileDownload fontSize="small" />
+            )}
+            {formatMessage({ id: "list.export.button" })}
+          </button>
+        </Tooltip>
+
         <div className="w-44">
-        <Autocomplete.Root
-          items={currencyItems}
-          onValueChange={handleCurrencyChange}
-        >
-          <Autocomplete.InputGroup>
-            <Autocomplete.Input
-              placeholder={
-                converting && displayCurrency
-                  ? `${getCurrencyFlag(displayCurrency)} ${displayCurrency}`
-                  : formatMessage({ id: "list.currency.searchPlaceholder" })
-              }
-            />
-            <Autocomplete.Clear />
-            <Autocomplete.Trigger>▾</Autocomplete.Trigger>
-          </Autocomplete.InputGroup>
-          <Autocomplete.Portal>
-            <Autocomplete.Positioner>
-              <Autocomplete.Popup>
-                <Autocomplete.List>
-                  <CurrencyList />
-                </Autocomplete.List>
-                <Autocomplete.Empty>
-                  {formatMessage({ id: "list.currency.noResults" })}
-                </Autocomplete.Empty>
-              </Autocomplete.Popup>
-            </Autocomplete.Positioner>
-          </Autocomplete.Portal>
-        </Autocomplete.Root>
+          <Autocomplete.Root
+            items={currencyItems}
+            onValueChange={handleCurrencyChange}
+          >
+            <Autocomplete.InputGroup>
+              <Autocomplete.Input
+                placeholder={
+                  converting && displayCurrency
+                    ? `${getCurrencyFlag(displayCurrency)} ${displayCurrency}`
+                    : formatMessage({ id: "list.currency.searchPlaceholder" })
+                }
+              />
+              <Autocomplete.Clear />
+              <Autocomplete.Trigger>▾</Autocomplete.Trigger>
+            </Autocomplete.InputGroup>
+            <Autocomplete.Portal>
+              <Autocomplete.Positioner>
+                <Autocomplete.Popup>
+                  <Autocomplete.List>
+                    <CurrencyList />
+                  </Autocomplete.List>
+                  <Autocomplete.Empty>
+                    {formatMessage({ id: "list.currency.noResults" })}
+                  </Autocomplete.Empty>
+                </Autocomplete.Popup>
+              </Autocomplete.Positioner>
+            </Autocomplete.Portal>
+          </Autocomplete.Root>
         </div>
       </div>
 
@@ -254,6 +280,14 @@ export default function List() {
         onOpenChange={(open) => { if (!open) setDeletingRef(null); }}
         onConfirm={handleDeleteReference}
         isDeleting={isDeleting}
+      />
+
+      <ExportPdfModal
+        open={exportModalOpen}
+        onClose={() => setExportModalOpen(false)}
+        onExport={exportPdf}
+        isExporting={isExporting}
+        availableReferences={availableReferences}
       />
     </div>
   );
