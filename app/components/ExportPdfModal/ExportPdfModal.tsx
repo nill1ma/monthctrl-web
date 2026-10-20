@@ -3,8 +3,9 @@
 import { SUPPORTED_CURRENCIES, getCurrencyFlag } from "@/app/lib/currency";
 import type { ExportFilters } from "@/app/hooks/useExportMenuPdf/useExportMenuPdf";
 import type { TransactionType } from "@/app/lib/pdf";
-import { CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, InputLabel, MenuItem, Select, ToggleButton, ToggleButtonGroup } from "@mui/material";
+import { Dialog } from "@developmentsnil/awake-ui/dialog";
 import { Button } from "@developmentsnil/awake-ui/button";
+import { CircularProgress } from "@mui/material";
 import { useState } from "react";
 import { useIntl } from "react-intl";
 
@@ -38,90 +39,129 @@ export function ExportPdfModal({ open, onClose, onExport, isExporting, available
     onClose();
   }
 
+  function toggleCurrency(c: string) {
+    setSelectedCurrencies((prev) =>
+      prev.includes(c) ? prev.filter((x) => x !== c) : [...prev, c]
+    );
+  }
+
+  const TYPES: { value: TransactionType; labelId: string }[] = [
+    { value: "all", labelId: "export.modal.type.all" },
+    { value: "incoming", labelId: "export.modal.type.incoming" },
+    { value: "expense", labelId: "export.modal.type.expense" },
+  ];
+
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle>{formatMessage({ id: "export.modal.title" })}</DialogTitle>
+    <Dialog.Root open={open} onOpenChange={(o) => { if (!o) onClose(); }}>
+      <Dialog.Portal>
+        <Dialog.Backdrop />
+        <Dialog.Popup className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 rounded-xl shadow-xl p-6 w-full max-w-sm flex flex-col gap-5">
 
-      <DialogContent className="flex flex-col gap-5 pt-4">
+          <Dialog.Title className="text-lg font-semibold">
+            {formatMessage({ id: "export.modal.title" })}
+          </Dialog.Title>
 
-        {/* Período — início */}
-        <FormControl fullWidth size="small">
-          <InputLabel>{formatMessage({ id: "export.modal.referenceStart" })}</InputLabel>
-          <Select
-            value={referenceStart}
-            label={formatMessage({ id: "export.modal.referenceStart" })}
-            onChange={(e) => setReferenceStart(e.target.value)}
-          >
-            {sortedRefs.map((ref) => (
-              <MenuItem key={ref} value={ref}>{ref}</MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+          {/* Período — início */}
+          <div className="flex flex-col gap-1">
+            <label className="text-sm font-medium">
+              {formatMessage({ id: "export.modal.referenceStart" })}
+            </label>
+            <select
+              value={referenceStart}
+              onChange={(e) => setReferenceStart(e.target.value)}
+              className="border rounded-lg px-3 py-2 text-sm bg-transparent"
+              style={{ borderColor: "var(--color-border)", color: "var(--color-text-primary)", backgroundColor: "var(--color-surface)" }}
+            >
+              {sortedRefs.map((ref) => (
+                <option key={ref} value={ref}>{ref}</option>
+              ))}
+            </select>
+          </div>
 
-        {/* Período — fim */}
-        <FormControl fullWidth size="small">
-          <InputLabel>{formatMessage({ id: "export.modal.referenceEnd" })}</InputLabel>
-          <Select
-            value={referenceEnd}
-            label={formatMessage({ id: "export.modal.referenceEnd" })}
-            onChange={(e) => setReferenceEnd(e.target.value)}
-          >
-            {sortedRefs.map((ref) => (
-              <MenuItem key={ref} value={ref}>{ref}</MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+          {/* Período — fim */}
+          <div className="flex flex-col gap-1">
+            <label className="text-sm font-medium">
+              {formatMessage({ id: "export.modal.referenceEnd" })}
+            </label>
+            <select
+              value={referenceEnd}
+              onChange={(e) => setReferenceEnd(e.target.value)}
+              className="border rounded-lg px-3 py-2 text-sm bg-transparent"
+              style={{ borderColor: "var(--color-border)", color: "var(--color-text-primary)", backgroundColor: "var(--color-surface)" }}
+            >
+              {sortedRefs.map((ref) => (
+                <option key={ref} value={ref}>{ref}</option>
+              ))}
+            </select>
+          </div>
 
-        {/* Tipo de transação */}
-        <div className="flex flex-col gap-1">
-          <span className="text-sm text-gray-500">{formatMessage({ id: "export.modal.transactionType" })}</span>
-          <ToggleButtonGroup
-            value={transactionType}
-            exclusive
-            onChange={(_, val) => { if (val) setTransactionType(val); }}
-            size="small"
-            fullWidth
-          >
-            <ToggleButton value="all">{formatMessage({ id: "export.modal.type.all" })}</ToggleButton>
-            <ToggleButton value="incoming">{formatMessage({ id: "export.modal.type.incoming" })}</ToggleButton>
-            <ToggleButton value="expense">{formatMessage({ id: "export.modal.type.expense" })}</ToggleButton>
-          </ToggleButtonGroup>
-        </div>
+          {/* Tipo de transação */}
+          <div className="flex flex-col gap-1">
+            <label className="text-sm font-medium">
+              {formatMessage({ id: "export.modal.transactionType" })}
+            </label>
+            <div className="flex gap-2">
+              {TYPES.map(({ value, labelId }) => (
+                <button
+                  key={value}
+                  onClick={() => setTransactionType(value)}
+                  className="flex-1 text-sm py-1.5 rounded-lg border transition-colors"
+                  style={{
+                    borderColor: transactionType === value ? "var(--color-primary)" : "var(--color-border)",
+                    backgroundColor: transactionType === value ? "var(--color-primary)" : "transparent",
+                    color: transactionType === value ? "#fff" : "var(--color-text-primary)",
+                  }}
+                >
+                  {formatMessage({ id: labelId })}
+                </button>
+              ))}
+            </div>
+          </div>
 
-        {/* Filtro de moedas */}
-        <FormControl fullWidth size="small">
-          <InputLabel>{formatMessage({ id: "export.modal.currencies" })}</InputLabel>
-          <Select
-            multiple
-            value={selectedCurrencies}
-            label={formatMessage({ id: "export.modal.currencies" })}
-            onChange={(e) => setSelectedCurrencies(e.target.value as string[])}
-            renderValue={(selected) =>
-              (selected as string[]).map((c) => `${getCurrencyFlag(c)} ${c}`).join(", ")
-            }
-          >
-            {SUPPORTED_CURRENCIES.map((c) => (
-              <MenuItem key={c} value={c}>
-                {getCurrencyFlag(c)} {c}
-              </MenuItem>
-            ))}
-          </Select>
-          <span className="text-xs text-gray-400 mt-1">
-            {formatMessage({ id: "export.modal.currencies.hint" })}
-          </span>
-        </FormControl>
+          {/* Moedas */}
+          <div className="flex flex-col gap-1">
+            <label className="text-sm font-medium">
+              {formatMessage({ id: "export.modal.currencies" })}
+            </label>
+            <div className="flex flex-wrap gap-2">
+              {SUPPORTED_CURRENCIES.map((c) => {
+                const selected = selectedCurrencies.includes(c);
+                return (
+                  <button
+                    key={c}
+                    onClick={() => toggleCurrency(c)}
+                    className="text-xs px-2 py-1 rounded-lg border transition-colors"
+                    style={{
+                      borderColor: selected ? "var(--color-primary)" : "var(--color-border)",
+                      backgroundColor: selected ? "var(--color-primary)" : "transparent",
+                      color: selected ? "#fff" : "var(--color-text-primary)",
+                    }}
+                  >
+                    {getCurrencyFlag(c)} {c}
+                  </button>
+                );
+              })}
+            </div>
+            <span className="text-xs" style={{ color: "var(--color-text-secondary)" }}>
+              {formatMessage({ id: "export.modal.currencies.hint" })}
+            </span>
+          </div>
 
-      </DialogContent>
+          {/* Actions */}
+          <div className="flex justify-end gap-3 mt-2">
+            <Dialog.Close render={
+              <Button variant="secondary" disabled={isExporting}>
+                {formatMessage({ id: "login.cancel" })}
+              </Button>
+            } />
+            <Button onClick={handleExport} disabled={isExporting} className="flex gap-1 items-center">
+              {isExporting && <CircularProgress size={14} />}
+              {formatMessage({ id: "export.modal.confirm" })}
+            </Button>
+          </div>
 
-      <DialogActions className="p-4 gap-2">
-        <Button variant="secondary" onClick={onClose} disabled={isExporting}>
-          {formatMessage({ id: "login.cancel" })}
-        </Button>
-        <Button onClick={handleExport} disabled={isExporting} className="flex gap-1 items-center">
-          {isExporting && <CircularProgress size={14} />}
-          {formatMessage({ id: "export.modal.confirm" })}
-        </Button>
-      </DialogActions>
-    </Dialog>
+        </Dialog.Popup>
+      </Dialog.Portal>
+    </Dialog.Root>
   );
 }
