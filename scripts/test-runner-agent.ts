@@ -43,18 +43,12 @@ async function runTests(): Promise<TestRunResult> {
 
 // ─── 2. Agent principal ───────────────────────────────────────────────────────
 
-export async function runTestRunnerAgent(): Promise<{ hasErrors: boolean }> {
-  console.log('\n🧪 Test Runner Agent iniciado...\n')
-
+export async function runTestRunnerAgent(): Promise<{ hasErrors: boolean; status: string }> {
   const result = await runTests()
 
   if (result.passed) {
-    console.log('✅ Todos os testes passaram — commit liberado.\n')
-    return { hasErrors: false }
+    return { hasErrors: false, status: 'All tests passed.' }
   }
-
-  console.log(`❌ ${result.failedTests} teste(s) falharam em ${result.failedSuites} suite(s)`)
-  console.log('⏳ Analisando falhas com IA...\n')
 
   const google = createGoogleGenerativeAI({ apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY })
   const { text } = await generateText({
@@ -71,8 +65,5 @@ Use emojis, seja direto e responda em português.`,
   console.log('━'.repeat(60))
   console.log(text)
   console.log('━'.repeat(60))
-  console.log(`\n🚫 Commit bloqueado: ${result.failedTests} teste(s) falhando.`)
-  console.log('   Corrija os testes acima antes de commitar.\n')
-
-  return { hasErrors: true }
+  return { hasErrors: true, status: `Blocked — ${result.failedTests} test(s) failed in ${result.failedSuites} suite(s). See report above.` }
 }

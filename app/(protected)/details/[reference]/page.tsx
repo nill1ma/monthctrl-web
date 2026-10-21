@@ -5,9 +5,10 @@ import { TransactionDetailsList } from "@/app/components/TransactionDetailsList/
 import { useExpenses } from "@/app/hooks/useExpenses/useExpenses";
 import { useTransactionCharts } from "@/app/hooks/useExpenses/useTransactionCharts/useTransactionCharts";
 import { useIncomings } from "@/app/hooks/useIncomings/useIncomings";
+import { useExportPdf } from "@/app/hooks/useExportPdf/useExportPdf";
 import { Button } from "@developmentsnil/awake-ui/button";
-import { ArrowCircleLeft } from "@mui/icons-material";
-import { Tooltip } from "@mui/material";
+import { ArrowCircleLeft, FileDownload } from "@mui/icons-material";
+import { CircularProgress, Tooltip } from "@mui/material";
 import { useParams, useRouter } from "next/navigation";
 import { FormattedMessage, useIntl } from "react-intl";
 import ReferenceDate from "../../../components/referenceDate/ReferenceDate";
@@ -41,6 +42,20 @@ export default function Details() {
   const { data: dataExpenses, isLoading: isLoadingExpenses, deleteMutation: deleteExpenseMutation } = useExpenses(reference);
   const { currencyGroups } = useTransactionCharts(dataIncomings, dataExpenses);
 
+  const { exportPdf, isExporting } = useExportPdf({
+    reference,
+    incomings: (dataIncomings ?? []).map((item) => ({
+      label: item.origin,
+      value: item.value ?? 0,
+      currency: item.currency ?? "BRL",
+    })),
+    expenses: (dataExpenses ?? []).map((item) => ({
+      label: item.destination,
+      value: item.value ?? 0,
+      currency: item.currency ?? "BRL",
+    })),
+  });
+
   if (isLoadingIncomings || isLoadingExpenses) {
     return <Loading />;
   }
@@ -54,12 +69,31 @@ export default function Details() {
 
   return (
     <>
-      <Tooltip title={`${formatMessage({ id: "details.goBack.button.tooltip" })}`} arrow placement="top">
-        <Button variant="secondary" onClick={() => router.push("/list")} className="border flex gap-1 mb-2">
-          <ArrowCircleLeft className="cursor-pointer" />
-          <FormattedMessage id="details.goBack.button" />
-        </Button>
-      </Tooltip>
+      <div className="flex items-center justify-between mb-2">
+        <Tooltip title={`${formatMessage({ id: "details.goBack.button.tooltip" })}`} arrow placement="top">
+          <Button variant="secondary" onClick={() => router.push("/list")} className="border flex gap-1">
+            <ArrowCircleLeft className="cursor-pointer" />
+            <FormattedMessage id="details.goBack.button" />
+          </Button>
+        </Tooltip>
+
+        <Tooltip title={formatMessage({ id: "details.export.label" })} arrow placement="top">
+          <Button
+            variant="secondary"
+            data-testid="export-pdf-button"
+            onClick={exportPdf}
+            disabled={isExporting}
+            className="border flex gap-1"
+          >
+            {isExporting ? (
+              <CircularProgress size={18} />
+            ) : (
+              <FileDownload fontSize="small" />
+            )}
+            <FormattedMessage id="details.export.button" />
+          </Button>
+        </Tooltip>
+      </div>
 
       <h3>
         <ReferenceDate reference={reference} />

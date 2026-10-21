@@ -93,30 +93,23 @@ ${snippet}
 
 // ─── 5. Agent principal ───────────────────────────────────────────────────────
 
-export async function runA11yAgent(): Promise<{ hasErrors: boolean }> {
-  console.log('\n♿ A11y Agent iniciado...\n')
+export async function runA11yAgent(): Promise<{ hasErrors: boolean; status: string }> {
+
 
   const stagedFiles = await getStagedFiles()
 
   if (stagedFiles.length === 0) {
-    console.log('✅ Nenhum componente React no staged — commit liberado.\n')
-    return { hasErrors: false }
+    return { hasErrors: false, status: 'No React components staged — skipped.' }
   }
-
-  console.log(`📂 Componentes staged: ${stagedFiles.join(', ')}\n`)
 
   const lintResults = await runA11yLint(stagedFiles)
 
   if (lintResults.length === 0) {
-    console.log('✅ Nenhuma violação de acessibilidade encontrada — commit liberado.\n')
-    return { hasErrors: false }
+    return { hasErrors: false, status: `No accessibility violations found across ${stagedFiles.length} file(s).` }
   }
 
   const totalErrors = lintResults.reduce((a: number, r: any) => a + r.errorCount, 0)
   const totalWarnings = lintResults.reduce((a: number, r: any) => a + r.warningCount, 0)
-
-  console.log(`⚠️  ${totalErrors} erro(s), ${totalWarnings} warning(s) de acessibilidade encontrados`)
-  console.log('⏳ Analisando com IA...\n')
 
   const context = await buildContext(lintResults)
 
@@ -138,11 +131,8 @@ Use emojis e seja direto. Responda em português.`,
   console.log('━'.repeat(60))
 
   if (totalErrors > 0) {
-    console.log(`\n🚫 Commit bloqueado: ${totalErrors} erro(s) crítico(s) de acessibilidade.`)
-    console.log('   Corrija os erros acima antes de commitar.\n')
-    return { hasErrors: true }
+    return { hasErrors: true, status: `Blocked — ${totalErrors} critical accessibility error(s). See report above.` }
   } else {
-    console.log(`\n⚠️  Commit permitido com ${totalWarnings} warning(s). Considere corrigir em breve.\n`)
-    return { hasErrors: false }
+    return { hasErrors: false, status: `Passed with ${totalWarnings} accessibility warning(s) — review suggested.` }
   }
 }

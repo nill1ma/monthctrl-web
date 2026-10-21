@@ -45,6 +45,8 @@ export const en: Record<string, string> = {
   "details.delete.expense.tooltip": "Delete expense",
   "details.goBack.button": "Go to list",
   "details.goBack.button.tooltip": "Go to list page",
+  "details.export.label": "Export this month's PDF",
+  "details.export.button": "Export PDF",
 
   // Delete confirmation dialog
   "delete.dialog.title": "Confirm deletion",
@@ -60,7 +62,22 @@ export const en: Record<string, string> = {
   "list.currency.noResults": "No currency found",
   "list.currency.unavailable": "Rate unavailable for some currencies",
   "list.deleteRef.tooltip": "Delete all transactions of {reference}",
+  "list.export.button": "Export",
+  "list.details.ariaLabel": "View details for {reference}",
+  "list.export.tooltip": "Export transactions as PDF",
   "details.net": "Net",
+
+  // Export PDF modal
+  "export.modal.title": "Export PDF",
+  "export.modal.referenceStart": "Period — start",
+  "export.modal.referenceEnd": "Period — end",
+  "export.modal.transactionType": "Transaction type",
+  "export.modal.type.all": "All",
+  "export.modal.type.incoming": "Incomings",
+  "export.modal.type.expense": "Expenses",
+  "export.modal.currencies": "Currencies",
+  "export.modal.currencies.hint": "Leave blank to include all currencies",
+  "export.modal.confirm": "Export",
 
   // Profile page
   "profile.title": "Profile",

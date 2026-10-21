@@ -37,18 +37,19 @@ app/
 │   ├── incomings_expenses_transactions/
 │   ├── profiles/
 │   └── auth/
-├── hooks/           # React Query wrappers over services
+├── hooks/           # React Query wrappers over services (useExportPdf, useExportMenuPdf, useExchangeRates…)
 ├── components/      # reusable components
 │   ├── ui/          # primitives (Button, Input, Pagination…)
 │   ├── forms/       # IncomingForm, ExpenseForm, LoginForm, CommonFields
 │   ├── chat/        # ChatWidget, ChatInput, MessageList
+│   └── ExportPdfModal/  # modal com filtros de período, tipo e moeda
 │   └── TransactionDetailsList/
 ├── i18n/            # internationalization
 │   ├── en.ts / pt.ts / es.ts   # translations
 │   ├── LocaleContext.tsx        # global locale state
 │   └── Provider.tsx             # IntlProvider + LocaleProvider
 ├── providers/       # ThemeProvider (next-themes), ReactQueryProvider
-└── lib/             # utilities (currency, auth helpers)
+└── lib/             # utilities (currency, auth helpers, pdf)
 ```
 
 ## Internationalization (i18n)
