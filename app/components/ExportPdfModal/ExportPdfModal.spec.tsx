@@ -28,7 +28,7 @@ jest.mock('@developmentsnil/awake-ui/dialog', () => {
         <h2 className={className}>{children}</h2>,
       Close: ({ render: r }: { render: React.ReactElement }) => {
         const close = React.useContext(DialogCloseCtx)
-        return React.cloneElement(r, { onClick: close })
+        return React.cloneElement(r as React.ReactElement<{ onClick?: () => void }>, { onClick: close })
       },
     },
   }
