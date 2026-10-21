@@ -80,6 +80,7 @@ export default function Details() {
         <Tooltip title={formatMessage({ id: "details.export.label" })} arrow placement="top">
           <Button
             variant="secondary"
+            data-testid="export-pdf-button"
             onClick={exportPdf}
             disabled={isExporting}
             className="border flex gap-1"

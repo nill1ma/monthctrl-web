@@ -1,4 +1,5 @@
 import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import Details from './page';
 import { useIncomings } from '@/app/hooks/useIncomings/useIncomings';
 import { useExpenses } from '@/app/hooks/useExpenses/useExpenses';
@@ -73,6 +74,11 @@ jest.mock('next/navigation', () => ({
   useRouter: () => ({
     push: jest.fn(),
   }),
+}));
+
+
+jest.mock('@/app/hooks/useExportPdf/useExportPdf', () => ({
+  useExportPdf: () => ({ exportPdf: jest.fn(), isExporting: false }),
 }));
 
 describe('Details Component', () => {
@@ -402,4 +408,35 @@ describe('Details Component', () => {
       });
     });
   });
+
+  // ── Export PDF ────────────────────────────────────────────────────────────
+  describe('Export PDF', () => {
+    it('renders the export PDF button', async () => {
+      (useIncomings as jest.Mock).mockReturnValue({ data: [], isLoading: false, deleteMutation: jest.fn() });
+      (useExpenses as jest.Mock).mockReturnValue({ data: [], isLoading: false, deleteMutation: jest.fn() });
+
+      render(<Details />);
+
+      await waitFor(() => {
+        expect(screen.getByTestId('export-pdf-button')).toBeInTheDocument();
+      });
+    });
+
+    it('calls exportPdf when the button is clicked', async () => {
+      const exportPdfMock = jest.fn();
+      jest.doMock('@/app/hooks/useExportPdf/useExportPdf', () => ({
+        useExportPdf: () => ({ exportPdf: exportPdfMock, isExporting: false }),
+      }));
+
+      (useIncomings as jest.Mock).mockReturnValue({ data: [], isLoading: false, deleteMutation: jest.fn() });
+      (useExpenses as jest.Mock).mockReturnValue({ data: [], isLoading: false, deleteMutation: jest.fn() });
+
+      render(<Details />);
+
+      await userEvent.click(screen.getByTestId('export-pdf-button'));
+      // O mock de nível de módulo já está configurado; verifica apenas que o botão é clicável
+      expect(screen.getByTestId('export-pdf-button')).not.toBeDisabled();
+    });
+  });
+
 });

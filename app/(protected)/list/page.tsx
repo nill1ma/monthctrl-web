@@ -11,6 +11,7 @@ import { ExportPdfModal } from "@/app/components/ExportPdfModal/ExportPdfModal";
 import Pagination from "@/app/components/ui/Pagination/Pagination";
 import { DeleteForever, FileDownload } from "@mui/icons-material";
 import { CircularProgress, Tooltip } from "@mui/material";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { useIntl } from "react-intl";
@@ -24,7 +25,6 @@ import {
 import { Autocomplete } from "@developmentsnil/awake-ui/autocomplete";
 import "./styles.css";
 
-const ORIGINAL_VALUE = "";
 
 
 // Sub-componente necessário: useFilteredItems precisa estar dentro do contexto do Root
@@ -123,6 +123,7 @@ export default function List() {
       <div className="flex items-center justify-between px-1 gap-2">
         <Tooltip title={formatMessage({ id: "list.export.tooltip" })} arrow placement="top">
           <button
+            data-testid="export-pdf-button"
             onClick={() => setExportModalOpen(true)}
             disabled={isExporting}
             className="flex items-center gap-1 text-sm px-3 py-1.5 rounded-lg border border-gray-300 hover:bg-gray-100 transition-colors disabled:opacity-50"
@@ -175,12 +176,12 @@ export default function List() {
         >
           {/* Header */}
           <div className="flex items-center justify-between">
-            <span
-              className="text-base font-semibold cursor-pointer hover:underline"
-              onClick={() => router.push(`/details/${encodeURIComponent(group.reference)}`)}
+            <Link
+              href={`/details/${encodeURIComponent(group.reference)}`}
+              className="text-base font-semibold hover:underline focus:outline-none focus:ring-2 focus:ring-primary"
             >
               {group.reference}
-            </span>
+            </Link>
 
             <Tooltip
               title={formatMessage({ id: "list.deleteRef.tooltip" }, { reference: group.reference })}
@@ -198,9 +199,10 @@ export default function List() {
           </div>
 
           {/* Sub-linhas por moeda */}
-          <div
-            className="flex flex-col gap-1 cursor-pointer"
-            onClick={() => router.push(`/details/${encodeURIComponent(group.reference)}`)}
+          <Link
+            href={`/details/${encodeURIComponent(group.reference)}`}
+            className="flex flex-col gap-1 focus:outline-none focus:ring-2 focus:ring-primary rounded"
+            aria-label={formatMessage({ id: "list.details.ariaLabel" }, { reference: group.reference })}
           >
             {converting && rates && displayCurrency ? (
               (() => {
@@ -264,7 +266,7 @@ export default function List() {
                 </div>
               ))
             )}
-          </div>
+          </Link>
         </div>
       ))}
 

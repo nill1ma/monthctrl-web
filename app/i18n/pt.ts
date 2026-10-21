@@ -63,6 +63,7 @@ export const pt: Record<string, string> = {
   "list.currency.unavailable": "Taxa indisponível para algumas moedas",
   "list.deleteRef.tooltip": "Deletar todas as transações de {reference}",
   "list.export.button": "Exportar",
+  "list.details.ariaLabel": "Ver detalhes de {reference}",
   "list.export.tooltip": "Exportar transações como PDF",
   "details.net": "Saldo",
 

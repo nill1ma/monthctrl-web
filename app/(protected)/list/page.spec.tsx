@@ -1,4 +1,4 @@
-import { render, screen, waitFor, act } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import List from './page';
 import { useIncomingsExpensesTransactionsList } from '@/app/hooks/useIncomingsExpensesTransactionsList/useIncomingsExpensesTransactionsList';
@@ -80,7 +80,7 @@ jest.mock('@mui/material', () => ({
 
 // Autocomplete: simple searchable select stub
 jest.mock('@developmentsnil/awake-ui/autocomplete', () => {
-  const { useState } = require('react');
+  const { useState } = jest.requireActual<typeof import('react')>('react');
   function Root({
     children,
     onValueChange,
@@ -107,15 +107,6 @@ jest.mock('@developmentsnil/awake-ui/autocomplete', () => {
     );
   }
   const stub = (props: { children?: React.ReactNode }) => <>{props.children}</>;
-  function CurrencyList({ items }: { items: string[] }) {
-    return (
-      <>
-        {items.map((c: string) => (
-          <div key={c} data-testid={`currency-item-${c}`}>{c}</div>
-        ))}
-      </>
-    );
-  }
   return {
     Autocomplete: {
       Root,
@@ -137,6 +128,16 @@ jest.mock('@developmentsnil/awake-ui/autocomplete', () => {
     },
   };
 });
+
+
+jest.mock('@/app/hooks/useExportMenuPdf/useExportMenuPdf', () => ({
+  useExportMenuPdf: () => ({ exportPdf: jest.fn().mockResolvedValue(undefined), isExporting: false }),
+}));
+
+jest.mock('@/app/components/ExportPdfModal/ExportPdfModal', () => ({
+  ExportPdfModal: ({ open, onClose }: { open: boolean; onClose: () => void }) =>
+    open ? <div data-testid="export-pdf-modal"><button onClick={onClose}>close-modal</button></div> : null,
+}));
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 const makeGroup = (reference: string) => ({
@@ -225,14 +226,16 @@ describe('List Component', () => {
 
   // ── Navigation ─────────────────────────────────────────────────────────────
   describe('Navigation', () => {
-    it('navigates to the details page when the reference is clicked', async () => {
+    it('renders a link to the details page for each reference', async () => {
       (useIncomingsExpensesTransactionsList as jest.Mock).mockReturnValue({
         data: { data: [makeGroup('01/2024')], totalElements: 1 },
         isLoading: false,
       });
       render(<List />);
-      await userEvent.click(screen.getByText('01/2024'));
-      expect(mockPush).toHaveBeenCalledWith('/details/01%2F2024');
+      await waitFor(() => {
+        const link = screen.getByText('01/2024').closest('a');
+        expect(link).toHaveAttribute('href', '/details/01%2F2024');
+      });
     });
   });
 
@@ -285,4 +288,33 @@ describe('List Component', () => {
       });
     });
   });
+
+  // ── Export PDF ────────────────────────────────────────────────────────────
+  describe('Export PDF', () => {
+    it('opens the export modal when the export button is clicked', async () => {
+      (useIncomingsExpensesTransactionsList as jest.Mock).mockReturnValue({
+        data: { data: [makeGroup('01/2024')], totalElements: 1 },
+        isLoading: false,
+      });
+      render(<List />);
+      await userEvent.click(screen.getByTestId('export-pdf-button'));
+      await waitFor(() => {
+        expect(screen.getByTestId('export-pdf-modal')).toBeInTheDocument();
+      });
+    });
+
+    it('closes the export modal when onClose is called', async () => {
+      (useIncomingsExpensesTransactionsList as jest.Mock).mockReturnValue({
+        data: { data: [makeGroup('01/2024')], totalElements: 1 },
+        isLoading: false,
+      });
+      render(<List />);
+      await userEvent.click(screen.getByTestId('export-pdf-button'));
+      await userEvent.click(screen.getByText('close-modal'));
+      await waitFor(() => {
+        expect(screen.queryByTestId('export-pdf-modal')).not.toBeInTheDocument();
+      });
+    });
+  });
+
 });
