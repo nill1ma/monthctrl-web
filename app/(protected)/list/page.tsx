@@ -22,7 +22,7 @@ import {
   formatCurrency,
   SUPPORTED_CURRENCIES,
 } from "@/app/lib/currency";
-import { Autocomplete } from "@developmentsnil/awake-ui/autocomplete";
+import { Autocomplete } from "@awakr/awake-ui/autocomplete";
 import "./styles.css";
 
 

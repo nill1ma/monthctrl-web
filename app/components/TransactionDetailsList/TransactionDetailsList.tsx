@@ -2,8 +2,8 @@
 
 import CardContainer from "@/app/components/card/card";
 import CardItem from "@/app/components/card/cardItem";
-import { Dialog } from "@developmentsnil/awake-ui/dialog";
-import { Button } from "@developmentsnil/awake-ui/button";
+import { Dialog } from "@awakr/awake-ui/dialog";
+import { Button } from "@awakr/awake-ui/button";
 import { DeleteForever, EditNote } from "@mui/icons-material";
 import { Tooltip } from "@mui/material";
 import { useRouter } from "next/navigation";

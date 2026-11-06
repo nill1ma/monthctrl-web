@@ -1,4 +1,4 @@
-import {Alert as AwakeUIAlert} from '@developmentsnil/awake-ui/alert'
+import {Alert as AwakeUIAlert} from '@awakr/awake-ui/alert'
 import { ComponentProps } from 'react';
 
 type AlertType = ComponentProps<typeof AwakeUIAlert>

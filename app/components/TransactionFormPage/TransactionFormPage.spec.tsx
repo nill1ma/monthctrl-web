@@ -24,7 +24,7 @@ jest.mock('@mui/icons-material', () => ({
 }));
 
 // ── awake-ui ──────────────────────────────────────────────────────────────────
-jest.mock('@developmentsnil/awake-ui/button', () => ({
+jest.mock('@awakr/awake-ui/button', () => ({
   Button: ({
     children,
     onClick,

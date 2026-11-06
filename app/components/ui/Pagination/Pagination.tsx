@@ -1,4 +1,4 @@
-import { Pagination as AwakeUIPagination } from '@developmentsnil/awake-ui/pagination';
+import { Pagination as AwakeUIPagination } from '@awakr/awake-ui/pagination';
 import { ComponentProps } from 'react';
 
 type PaginationProps = ComponentProps<typeof AwakeUIPagination>;

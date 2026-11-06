@@ -1,4 +1,4 @@
-import { Switch as AwakeUISwitch } from '@developmentsnil/awake-ui/switch';
+import { Switch as AwakeUISwitch } from '@awakr/awake-ui/switch';
 import { ComponentProps } from 'react';
 
 type SwitchRootProps = ComponentProps<typeof AwakeUISwitch.Root>;

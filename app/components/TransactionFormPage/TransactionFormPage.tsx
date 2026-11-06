@@ -1,7 +1,7 @@
 "use client";
 
 import { ExpenseForm, IncomingForm } from "@/app/components/forms";
-import { Button } from "@developmentsnil/awake-ui/button";
+import { Button } from "@awakr/awake-ui/button";
 import { ArrowCircleLeft } from "@mui/icons-material";
 import { Tooltip } from "@mui/material";
 import { useRouter } from "next/navigation";

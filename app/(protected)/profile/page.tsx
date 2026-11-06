@@ -3,6 +3,7 @@
 import "./styles.css"
 
 import { useEffect, useState } from "react"
+import Loading from "@/app/components/loading/loading"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
@@ -71,9 +72,7 @@ export default function ProfilePage() {
 
   if (loading) {
     return (
-      <div className="profile-loading">
-        <p>{formatMessage({ id: "profile.loading" })}</p>
-      </div>
+      <Loading />
     )
   }
 

@@ -1,5 +1,5 @@
 
-import { Table as AwakeUITable } from '@developmentsnil/awake-ui/table';
+import { Table as AwakeUITable } from '@awakr/awake-ui/table';
 import clsx from 'clsx';
 import './styles.css';
 import { ComponentProps } from 'react';

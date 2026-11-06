@@ -1,6 +1,6 @@
 
 import "./styles.css";
-import {Button as AwakeUIButton} from '@developmentsnil/awake-ui/button'
+import {Button as AwakeUIButton} from '@awakr/awake-ui/button'
 import clsx from 'clsx';
 
 type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {

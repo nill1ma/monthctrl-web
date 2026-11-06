@@ -79,7 +79,7 @@ jest.mock('@mui/material', () => ({
 }));
 
 // Autocomplete: simple searchable select stub
-jest.mock('@developmentsnil/awake-ui/autocomplete', () => {
+jest.mock('@awakr/awake-ui/autocomplete', () => {
   const { useState } = jest.requireActual<typeof import('react')>('react');
   function Root({
     children,

@@ -6,7 +6,7 @@ import { useExpenses } from "@/app/hooks/useExpenses/useExpenses";
 import { useTransactionCharts } from "@/app/hooks/useExpenses/useTransactionCharts/useTransactionCharts";
 import { useIncomings } from "@/app/hooks/useIncomings/useIncomings";
 import { useExportPdf } from "@/app/hooks/useExportPdf/useExportPdf";
-import { Button } from "@developmentsnil/awake-ui/button";
+import { Button } from "@awakr/awake-ui/button";
 import { ArrowCircleLeft, FileDownload } from "@mui/icons-material";
 import { CircularProgress, Tooltip } from "@mui/material";
 import { useParams, useRouter } from "next/navigation";

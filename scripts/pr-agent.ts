@@ -222,17 +222,32 @@ async function runPrAgent() {
 
     const context = await buildContext(lintResults)
 
-    const { text } = await generateText({
-      model: google('gemini-3.8-flash'),
-      system: `Você é um especialista em qualidade de código Next.js e TypeScript.
+    let aiAnalysis = ''
+    try {
+      const { text } = await generateText({
+        model: google('gemini-3.8-flash'),
+        system: `Você é um especialista em qualidade de código Next.js e TypeScript.
 Analise os warnings do ESLint e gere um relatório em português formatado em Markdown para ser postado como comentário no GitHub.
 Para cada problema: explique o que é, mostre o código corrigido (antes/depois).
 Ao final: top 3 regras violadas e estimativa de esforço (rápida/média/trabalhosa).
 Seja direto e prático. Use emojis para facilitar a leitura.`,
-      prompt: `Analise estes warnings e gere o relatório:\n${context}`,
-    })
+        prompt: `Analise estes warnings e gere o relatório:\n${context}`,
+      })
+      aiAnalysis = text
+    } catch (aiErr: any) {
+      const isQuotaError =
+        aiErr?.statusCode === 503 ||
+        aiErr?.reason === 'maxRetriesExceeded' ||
+        aiErr?.name === 'AI_RetryError'
+      if (isQuotaError) {
+        console.warn('⚠️  Gemini indisponível (503/quota) — relatório gerado sem análise de IA.')
+        aiAnalysis = '_⚠️ Análise de IA indisponível (Gemini com alta demanda). Verifique os warnings manualmente._'
+      } else {
+        throw aiErr
+      }
+    }
 
-    lintSection = `## 🔍 Lint — ${totalErrors} erros, ${totalWarnings} warnings\n\n${text}`
+    lintSection = `## 🔍 Lint — ${totalErrors} erros, ${totalWarnings} warnings\n\n${aiAnalysis}`
   }
 
   // ── Seção da Vercel ──
