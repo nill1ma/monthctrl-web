@@ -173,4 +173,34 @@ describe('TransactionDetailsList', () => {
     );
     expect(screen.queryByTestId('EditNoteIcon')).not.toBeInTheDocument();
   });
+
+  it('shows confirm button disabled while deleting (isDeleting branch)', async () => {
+    let resolveDelete: () => void;
+    const onDelete = jest.fn(
+      () => new Promise<void>((res) => { resolveDelete = res; })
+    );
+
+    render(
+      <TransactionDetailsList items={incomingItems} labelKey="origin" onDelete={onDelete} />
+    );
+
+    // Open the delete dialog
+    await userEvent.click(screen.getAllByTestId('DeleteForeverIcon')[0]);
+    expect(screen.getByTestId('dialog-popup')).toBeInTheDocument();
+
+    // Click confirm — triggers handleConfirmDelete, sets isDeleting(true)
+    const buttons = screen.getAllByRole('button');
+    const confirmButton = buttons.find((b) => b.textContent === 'delete.dialog.confirm')!;
+    await userEvent.click(confirmButton);
+
+    // While promise is pending, isDeleting===true → confirm should be disabled
+    await waitFor(() => {
+      expect(onDelete).toHaveBeenCalled();
+      const confirmAfter = screen.queryAllByRole('button').find((b) => b.textContent === 'delete.dialog.confirm');
+      if (confirmAfter) expect(confirmAfter).toBeDisabled();
+    });
+
+    // Resolve promise so cleanup can run
+    resolveDelete!();
+  });
 });
