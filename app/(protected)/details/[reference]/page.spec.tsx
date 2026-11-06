@@ -59,13 +59,12 @@ jest.mock('@/app/components/referenceDate/ReferenceDate', () => {
   };
 });
 
-// Mock icons
-jest.mock('@mui/material', () => ({
-  Tooltip: ({ children, title }: { children: React.ReactNode; title: string }) => <div title={title}>{children}</div>,
-}));
 
-jest.mock('@mui/icons-material', () => ({
-  ArrowCircleLeft: () => <div data-testid="arrow-back">Back</div>,
+
+jest.mock('@/app/components/icons', () => ({
+  ArrowCircleLeftIcon: () => <div data-testid="arrow-back">Back</div>,
+  FileDownloadIcon: () => <div data-testid="file-download" />,
+  Spinner: () => <div data-testid="spinner" />,
 }));
 
 // Mock router
