@@ -21,7 +21,7 @@
   "dependencies": {
     "@ai-sdk/google": "^4.0.98",
     "@ai-sdk/groq": "^4.0.62",
-    "@developmentsnil/awake-ui": "^0.2.2",
+    "@awakr/awake-ui": "^0.2.6",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "@hookform/resolvers": "^5.9.1",

@@ -3,8 +3,8 @@
 import { SUPPORTED_CURRENCIES, getCurrencyFlag } from "@/app/lib/currency";
 import type { ExportFilters } from "@/app/hooks/useExportMenuPdf/useExportMenuPdf";
 import type { TransactionType } from "@/app/lib/pdf";
-import { Dialog } from "@developmentsnil/awake-ui/dialog";
-import { Button } from "@developmentsnil/awake-ui/button";
+import { Dialog } from "@awakr/awake-ui/dialog";
+import { Button } from "@awakr/awake-ui/button";
 import { CircularProgress } from "@mui/material";
 import { useState } from "react";
 import { useIntl } from "react-intl";

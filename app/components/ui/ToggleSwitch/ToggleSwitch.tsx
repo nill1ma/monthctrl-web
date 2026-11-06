@@ -2,7 +2,7 @@
 
 import { useMounted } from '@/app/hooks/useMounted/useMounted';
 import { useTheme } from '@/app/providers/ThemeProvider';
-import { Switch } from '@developmentsnil/awake-ui/switch';
+import { Switch } from '@awakr/awake-ui/switch';
 
 export default function ToggleSwitch() {
   const { setTheme, resolvedTheme } = useTheme();

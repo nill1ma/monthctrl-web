@@ -8,7 +8,7 @@ jest.mock('react-intl', () => ({
 }))
 
 // ── awake-ui Dialog ─────────────────────────────────────────────────────────
-jest.mock('@developmentsnil/awake-ui/dialog', () => {
+jest.mock('@awakr/awake-ui/dialog', () => {
   const React = jest.requireActual<typeof import('react')>('react')
   const DialogCloseCtx = React.createContext<() => void>(() => {})
 
@@ -34,7 +34,7 @@ jest.mock('@developmentsnil/awake-ui/dialog', () => {
   }
 })
 
-jest.mock('@developmentsnil/awake-ui/button', () => ({
+jest.mock('@awakr/awake-ui/button', () => ({
   Button: ({ children, onClick, disabled }: { children: React.ReactNode; onClick?: () => void; disabled?: boolean }) =>
     <button onClick={onClick} disabled={disabled}>{children}</button>,
 }))

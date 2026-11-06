@@ -1,7 +1,7 @@
 "use client";
 
 import { logout } from "@/app/services/auth/auth";
-import { Button } from "@developmentsnil/awake-ui/button";
+import { Button } from "@awakr/awake-ui/button";
 import "./styles.css";
 import { usePathname } from "next/navigation";
 import ToggleSwitch from "@/app/components/ui/ToggleSwitch/ToggleSwitch";

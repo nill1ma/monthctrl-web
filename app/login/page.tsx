@@ -7,7 +7,7 @@ import "./styles.css";
 import LoginForm from "../components/forms/LoginForm/LoginForm";
 import { FormattedMessage } from "react-intl";
 // import Divider from '@mui/material/Divider';
-import { Separator } from "@developmentsnil/awake-ui/separator";
+import { Separator } from "@awakr/awake-ui/separator";
 
 export default function Login() {
   const [error, setError] = useState<string | null>(null);
