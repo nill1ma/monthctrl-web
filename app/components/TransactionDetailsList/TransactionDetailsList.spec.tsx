@@ -74,6 +74,7 @@ jest.mock('@/app/components/card/cardItem', () => ({
 
 // ── Fixtures ──────────────────────────────────────────────────────────────────
 interface Incoming {
+  [key: string]: unknown;
   id: string;
   origin: string;
   value: number;
@@ -86,6 +87,7 @@ const incomingItems: Incoming[] = [
 ];
 
 interface Expense {
+  [key: string]: unknown;
   id: string;
   destination: string;
   value: number;
