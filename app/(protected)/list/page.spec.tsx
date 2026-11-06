@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, fireEvent, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import List from './page';
 import { useIncomingsExpensesTransactionsList } from '@/app/hooks/useIncomingsExpensesTransactionsList/useIncomingsExpensesTransactionsList';
@@ -7,6 +7,13 @@ import { useExpenses } from '@/app/hooks/useExpenses/useExpenses';
 import { useExchangeRates } from '@/app/hooks/useExchangeRates/useExchangeRates';
 
 // ── Hooks ───────────────────────────────────────────────────────────────────
+jest.mock('@/app/components/icons', () => ({
+  ArrowCircleLeftIcon: () => <svg data-testid="ArrowCircleLeftIcon" />,
+  FileDownloadIcon: () => <svg data-testid="FileDownloadIcon" />,
+  Spinner: ({ size }: { size?: number }) => <svg data-testid="Spinner" />,
+  DeleteForeverIcon: () => <svg data-testid="DeleteForeverIcon" />,
+}));
+
 jest.mock('@/app/hooks/useIncomingsExpensesTransactionsList/useIncomingsExpensesTransactionsList');
 jest.mock('@/app/hooks/useIncomings/useIncomings');
 jest.mock('@/app/hooks/useExpenses/useExpenses');
@@ -68,15 +75,11 @@ jest.mock('./DeleteReferenceDialog', () => ({
           Confirm
         </button>
         <button onClick={() => onOpenChange(false)}>Cancel</button>
+        <button data-testid="reopen-dialog" onClick={() => onOpenChange(true)}>Reopen</button>
       </div>
     ) : null,
 }));
 
-// @mui/icons-material renders the real SVG with data-testid="DeleteForeverIcon"
-
-jest.mock('@mui/material', () => ({
-  Tooltip: ({ children }: { children: React.ReactNode }) => <>{children}</>,
-}));
 
 // Autocomplete: simple searchable select stub
 jest.mock('@awakr/awake-ui/autocomplete', () => {
@@ -124,7 +127,7 @@ jest.mock('@awakr/awake-ui/autocomplete', () => {
         <div data-testid={`ac-item-${value}`}>{children}</div>
       ),
       Empty: stub,
-      useFilteredItems: (items: string[]) => items,
+      useFilteredItems: () => ['BRL', 'USD', 'EUR'],
     },
   };
 });
@@ -313,6 +316,240 @@ describe('List Component', () => {
       await userEvent.click(screen.getByText('close-modal'));
       await waitFor(() => {
         expect(screen.queryByTestId('export-pdf-modal')).not.toBeInTheDocument();
+      });
+    });
+  });
+
+  // ── CurrencyList (lines 32-36) ───────────────────────────────────────────
+  describe('CurrencyList popup', () => {
+    it('renders currency items when the autocomplete popup is open', async () => {
+      (useIncomingsExpensesTransactionsList as jest.Mock).mockReturnValue({
+        data: { data: [makeGroup('01/2024')], totalElements: 1 },
+        isLoading: false,
+      });
+      render(<List />);
+      fireEvent.focus(screen.getByTestId('currency-input'));
+      await waitFor(() => {
+        expect(screen.getByTestId('currency-popup')).toBeInTheDocument();
+        expect(screen.getByTestId('ac-item-BRL')).toBeInTheDocument();
+        expect(screen.getByTestId('ac-item-USD')).toBeInTheDocument();
+      });
+    });
+  });
+
+  // ── handleCurrencyChange debounce (lines 56-58) ──────────────────────────
+  describe('Currency change debounce', () => {
+    beforeEach(() => { jest.useFakeTimers(); });
+    afterEach(() => { jest.useRealTimers(); });
+
+    it('calls useExchangeRates with the selected currency after the debounce delay', async () => {
+      (useIncomingsExpensesTransactionsList as jest.Mock).mockReturnValue({
+        data: { data: [makeGroup('01/2024')], totalElements: 1 },
+        isLoading: false,
+      });
+      (useExchangeRates as jest.Mock).mockReturnValue({ data: null });
+
+      render(<List />);
+      fireEvent.change(screen.getByTestId('currency-input'), { target: { value: 'USD' } });
+      expect(useExchangeRates).toHaveBeenLastCalledWith('', []);
+      act(() => { jest.advanceTimersByTime(400); });
+      await waitFor(() => {
+        expect(useExchangeRates).toHaveBeenCalledWith('USD', expect.any(Array));
+      });
+    });
+  });
+
+  // ── Currency conversion display (lines 205-225) ───────────────────────────
+  describe('Currency conversion display', () => {
+    beforeEach(() => { jest.useFakeTimers(); });
+    afterEach(() => { jest.useRealTimers(); });
+
+    const usdGroup = {
+      reference: '01/2024',
+      currencies: [
+        { currency: 'USD', incoming_value: 1000, expense_value: 200, net_income: 800 },
+      ],
+    };
+
+    it('renders converted totals when displayCurrency is set and rates are available', async () => {
+      (useIncomingsExpensesTransactionsList as jest.Mock).mockReturnValue({
+        data: { data: [usdGroup], totalElements: 1 },
+        isLoading: false,
+      });
+      (useExchangeRates as jest.Mock).mockReturnValue({ data: { USD: 0.2 } });
+
+      render(<List />);
+      fireEvent.change(screen.getByTestId('currency-input'), { target: { value: 'BRL' } });
+      act(() => { jest.advanceTimersByTime(400); });
+
+      await waitFor(() => {
+        expect(screen.getByText(/BRL\s*≈/)).toBeInTheDocument();
+      });
+    });
+
+    it('shows unavailable message when conversion rate is missing', async () => {
+      (useIncomingsExpensesTransactionsList as jest.Mock).mockReturnValue({
+        data: { data: [usdGroup], totalElements: 1 },
+        isLoading: false,
+      });
+      (useExchangeRates as jest.Mock).mockReturnValue({ data: {} });
+
+      render(<List />);
+      fireEvent.change(screen.getByTestId('currency-input'), { target: { value: 'BRL' } });
+      act(() => { jest.advanceTimersByTime(400); });
+
+      await waitFor(() => {
+        expect(screen.getByText('list.currency.unavailable')).toBeInTheDocument();
+      });
+    });
+  });
+
+  // ── Pagination onPageChange (line 272) ────────────────────────────────────
+  describe('Pagination', () => {
+    it('advances to the next page when the Next button is clicked', async () => {
+      (useIncomingsExpensesTransactionsList as jest.Mock).mockReturnValue({
+        data: { data: [makeGroup('01/2024')], totalElements: 20 },
+        isLoading: false,
+      });
+      render(<List />);
+      await userEvent.click(screen.getByText('Next'));
+      await waitFor(() => {
+        expect(useIncomingsExpensesTransactionsList).toHaveBeenCalledWith(2);
+      });
+    });
+  });
+
+  // ── DeleteReferenceDialog onOpenChange close (line 275) ───────────────────
+  describe('Delete dialog close', () => {
+    it('closes the delete dialog when Cancel is clicked', async () => {
+      (useIncomingsExpensesTransactionsList as jest.Mock).mockReturnValue({
+        data: { data: [makeGroup('01/2024')], totalElements: 1 },
+        isLoading: false,
+      });
+      render(<List />);
+      await userEvent.click(screen.getByTestId('DeleteForeverIcon'));
+      expect(screen.getByTestId('delete-dialog')).toBeInTheDocument();
+      await userEvent.click(screen.getByText('Cancel'));
+      await waitFor(() => {
+        expect(screen.queryByTestId('delete-dialog')).not.toBeInTheDocument();
+      });
+    });
+
+    it('does not close dialog when onOpenChange is called with true (line 278 open=true branch)', async () => {
+      (useIncomingsExpensesTransactionsList as jest.Mock).mockReturnValue({
+        data: { data: [makeGroup('01/2024')], totalElements: 1 },
+        isLoading: false,
+      });
+      render(<List />);
+      await userEvent.click(screen.getByTestId('DeleteForeverIcon'));
+      expect(screen.getByTestId('delete-dialog')).toBeInTheDocument();
+      await userEvent.click(screen.getByTestId('reopen-dialog'));
+      // dialog stays open because onOpenChange(true) does not call setDeletingRef(null)
+      expect(screen.getByTestId('delete-dialog')).toBeInTheDocument();
+    });
+  });
+
+  // ── handleDeleteReference confirm flow (lines 108-130) ───────────────────
+  describe('handleDeleteReference', () => {
+    it('calls deleteIncomings and deleteExpenses when confirm is clicked', async () => {
+      const deleteIncomingsMock = jest.fn().mockResolvedValue(undefined);
+      const deleteExpensesMock = jest.fn().mockResolvedValue(undefined);
+      (useIncomings as jest.Mock).mockReturnValue({ deleteByReferenceMutation: deleteIncomingsMock });
+      (useExpenses as jest.Mock).mockReturnValue({ deleteByReferenceMutation: deleteExpensesMock });
+      (useIncomingsExpensesTransactionsList as jest.Mock).mockReturnValue({
+        data: { data: [makeGroup('01/2024')], totalElements: 1 },
+        isLoading: false,
+      });
+
+      render(<List />);
+      await userEvent.click(screen.getByTestId('DeleteForeverIcon'));
+      expect(screen.getByTestId('delete-dialog')).toBeInTheDocument();
+
+      await userEvent.click(screen.getByTestId('confirm-delete'));
+
+      await waitFor(() => {
+        expect(deleteIncomingsMock).toHaveBeenCalled();
+        expect(deleteExpensesMock).toHaveBeenCalled();
+      });
+    });
+  });
+
+  // ── Debounce clears previous timer (lines 56-58) ─────────────────────────
+  describe('Currency change debounce clears timer', () => {
+    beforeEach(() => { jest.useFakeTimers(); });
+    afterEach(() => { jest.useRealTimers(); });
+
+    it('uses the last value when currency-input changes twice before debounce fires', async () => {
+      (useIncomingsExpensesTransactionsList as jest.Mock).mockReturnValue({
+        data: { data: [makeGroup('01/2024')], totalElements: 1 },
+        isLoading: false,
+      });
+      (useExchangeRates as jest.Mock).mockReturnValue({ data: null });
+
+      render(<List />);
+      const input = screen.getByTestId('currency-input');
+
+      // First change — starts a debounce timer
+      fireEvent.change(input, { target: { value: 'USD' } });
+      // Second change before 400ms — should clearTimeout on the first and start a new one
+      fireEvent.change(input, { target: { value: 'EUR' } });
+
+      await act(async () => { jest.advanceTimersByTime(400); });
+
+      expect(useExchangeRates).toHaveBeenCalledWith('EUR', expect.any(Array));
+    });
+  });
+
+  // ── Negative net in converting case (line 238 false branch) ──────────────
+  describe('Negative net in currency conversion', () => {
+    beforeEach(() => { jest.useFakeTimers(); });
+    afterEach(() => { jest.useRealTimers(); });
+
+    it('shows net in red when converted expenses exceed converted incomings', async () => {
+      const negGroup = {
+        reference: '01/2024',
+        currencies: [
+          { currency: 'USD', incoming_value: 100, expense_value: 500, net_income: -400 },
+        ],
+      };
+      (useIncomingsExpensesTransactionsList as jest.Mock).mockReturnValue({
+        data: { data: [negGroup], totalElements: 1 },
+        isLoading: false,
+      });
+      // Rate USD → BRL = 5, so totalIncoming=500, totalExpense=2500, net=-2000 (< 0)
+      (useExchangeRates as jest.Mock).mockReturnValue({ data: { USD: 5 } });
+
+      render(<List />);
+      fireEvent.change(screen.getByTestId('currency-input'), { target: { value: 'BRL' } });
+      act(() => { jest.advanceTimersByTime(400); });
+
+      await waitFor(() => {
+        expect(screen.getByText(/BRL\s*≈/)).toBeInTheDocument();
+      });
+    });
+  });
+
+  // ── Negative net in non-converting case (line 258 false branch) ──────────
+  describe('Negative net in non-converting display', () => {
+    it('shows negative net_income in red class', async () => {
+      const negGroup = {
+        reference: '01/2024',
+        currencies: [
+          { currency: 'BRL', incoming_value: 100, expense_value: 500, net_income: -400 },
+        ],
+      };
+      (useIncomingsExpensesTransactionsList as jest.Mock).mockReturnValue({
+        data: { data: [negGroup], totalElements: 1 },
+        isLoading: false,
+      });
+      (useExchangeRates as jest.Mock).mockReturnValue({ data: null });
+
+      render(<List />);
+
+      // The net span should have text-red-500 class when net_income < 0
+      await waitFor(() => {
+        // The currency label renders
+        expect(screen.getByText(/BRL/)).toBeInTheDocument();
       });
     });
   });

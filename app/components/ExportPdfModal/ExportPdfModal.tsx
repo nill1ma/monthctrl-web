@@ -5,7 +5,7 @@ import type { ExportFilters } from "@/app/hooks/useExportMenuPdf/useExportMenuPd
 import type { TransactionType } from "@/app/lib/pdf";
 import { Dialog } from "@awakr/awake-ui/dialog";
 import { Button } from "@awakr/awake-ui/button";
-import { CircularProgress } from "@mui/material";
+import { Spinner } from "@/app/components/icons";
 import { useState } from "react";
 import { useIntl } from "react-intl";
 
@@ -155,7 +155,7 @@ export function ExportPdfModal({ open, onClose, onExport, isExporting, available
               </Button>
             } />
             <Button onClick={handleExport} disabled={isExporting} className="flex gap-1 items-center">
-              {isExporting && <CircularProgress size={14} />}
+              {isExporting && <Spinner size={14} />}
               {formatMessage({ id: "export.modal.confirm" })}
             </Button>
           </div>

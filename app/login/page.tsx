@@ -6,7 +6,6 @@ import { useState } from "react";
 import "./styles.css";
 import LoginForm from "../components/forms/LoginForm/LoginForm";
 import { FormattedMessage } from "react-intl";
-// import Divider from '@mui/material/Divider';
 import { Separator } from "@awakr/awake-ui/separator";
 
 export default function Login() {

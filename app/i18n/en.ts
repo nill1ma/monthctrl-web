@@ -65,6 +65,7 @@ export const en: Record<string, string> = {
   "list.export.button": "Export",
   "list.details.ariaLabel": "View details for {reference}",
   "list.export.tooltip": "Export transactions as PDF",
+  "details.chart.button": "View chart",
   "details.net": "Net",
 
   // Export PDF modal

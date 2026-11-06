@@ -1,4 +1,11 @@
-import { BarChart } from '@mui/x-charts/BarChart';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  ResponsiveContainer,
+  Cell,
+} from "recharts";
 
 type BarChartProps = {
   id: string;
@@ -8,38 +15,37 @@ type BarChartProps = {
 };
 
 export default function BarChartComponent({
-  id,
   dataAxis,
   data,
   className,
 }: BarChartProps) {
+  const chartData = dataAxis.map((label, index) => ({
+    label,
+    value: data[index] ?? 0,
+  }));
+
   return (
-    <BarChart
-    yAxis={[
-      {
-        tickLabelStyle: { fill: '#ffffff' },
-      },
-    ]}
-    xAxis={[
-      {
-        id,
-        data: dataAxis,
-        height: 10,
-        tickLabelStyle: { fill: '#ffffff' },
-        colorMap: {
-          type: 'continuous',
-          color: ['#a3e635', '#a3e635'],
-        },
-      },
-    ]}
-    series={[
-      {
-        data,
-      },
-    ]}
-    width={700}
-    height={250}
-    className={`${className}`}
-    />
+    <div className={className} style={{ width: "100%", height: 250 }}>
+      <ResponsiveContainer width="100%" height="100%">
+        <BarChart data={chartData}>
+          <XAxis
+            dataKey="label"
+            tick={{ fill: "#ffffff", fontSize: 12 }}
+            tickLine={false}
+            axisLine={false}
+          />
+          <YAxis
+            tick={{ fill: "#ffffff", fontSize: 12 }}
+            tickLine={false}
+            axisLine={false}
+          />
+          <Bar dataKey="value" radius={[4, 4, 0, 0]}>
+            {chartData.map((_, index) => (
+              <Cell key={`cell-${index}`} fill="#a3e635" />
+            ))}
+          </Bar>
+        </BarChart>
+      </ResponsiveContainer>
+    </div>
   );
 }

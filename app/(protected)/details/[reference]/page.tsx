@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Loading from "@/app/components/loading/loading";
 import { TransactionDetailsList } from "@/app/components/TransactionDetailsList/TransactionDetailsList";
 import { useExpenses } from "@/app/hooks/useExpenses/useExpenses";
@@ -7,8 +8,9 @@ import { useTransactionCharts } from "@/app/hooks/useExpenses/useTransactionChar
 import { useIncomings } from "@/app/hooks/useIncomings/useIncomings";
 import { useExportPdf } from "@/app/hooks/useExportPdf/useExportPdf";
 import { Button } from "@awakr/awake-ui/button";
-import { ArrowCircleLeft, FileDownload } from "@mui/icons-material";
-import { CircularProgress, Tooltip } from "@mui/material";
+import { Dialog } from "@awakr/awake-ui/dialog";
+import CurrencyChart from "@/app/components/Chart/CurrencyChart/CurrencyChart";
+import { ArrowCircleLeftIcon, FileDownloadIcon, Spinner } from "@/app/components/icons";
 import { useParams, useRouter } from "next/navigation";
 import { FormattedMessage, useIntl } from "react-intl";
 import ReferenceDate from "../../../components/referenceDate/ReferenceDate";
@@ -42,6 +44,8 @@ export default function Details() {
   const { data: dataExpenses, isLoading: isLoadingExpenses, deleteMutation: deleteExpenseMutation } = useExpenses(reference);
   const { currencyGroups } = useTransactionCharts(dataIncomings, dataExpenses);
 
+  const [chartCurrency, setChartCurrency] = useState<string | null>(null);
+
   const { exportPdf, isExporting } = useExportPdf({
     reference,
     incomings: (dataIncomings ?? []).map((item) => ({
@@ -70,29 +74,31 @@ export default function Details() {
   return (
     <>
       <div className="flex items-center justify-between mb-2">
-        <Tooltip title={`${formatMessage({ id: "details.goBack.button.tooltip" })}`} arrow placement="top">
-          <Button variant="secondary" onClick={() => router.push("/list")} className="border flex gap-1">
-            <ArrowCircleLeft className="cursor-pointer" />
-            <FormattedMessage id="details.goBack.button" />
-          </Button>
-        </Tooltip>
+        <Button
+          variant="secondary"
+          onClick={() => router.push("/list")}
+          className="border flex gap-1"
+          title={formatMessage({ id: "details.goBack.button.tooltip" })}
+        >
+          <ArrowCircleLeftIcon className="cursor-pointer" />
+          <FormattedMessage id="details.goBack.button" />
+        </Button>
 
-        <Tooltip title={formatMessage({ id: "details.export.label" })} arrow placement="top">
-          <Button
-            variant="secondary"
-            data-testid="export-pdf-button"
-            onClick={exportPdf}
-            disabled={isExporting}
-            className="border flex gap-1"
-          >
-            {isExporting ? (
-              <CircularProgress size={18} />
-            ) : (
-              <FileDownload fontSize="small" />
-            )}
-            <FormattedMessage id="details.export.button" />
-          </Button>
-        </Tooltip>
+        <Button
+          variant="secondary"
+          data-testid="export-pdf-button"
+          onClick={exportPdf}
+          disabled={isExporting}
+          className="border flex gap-1"
+          title={formatMessage({ id: "details.export.label" })}
+        >
+          {isExporting ? (
+            <Spinner size={18} />
+          ) : (
+            <FileDownloadIcon />
+          )}
+          <FormattedMessage id="details.export.button" />
+        </Button>
       </div>
 
       <h3>
@@ -121,6 +127,13 @@ export default function Details() {
                   {formatCurrency(group.netIncome, group.currency)}
                 </span>
               </div>
+              <button
+                type="button"
+                onClick={() => setChartCurrency(group.currency)}
+                className="mt-2 text-xs text-center w-full border rounded py-1 hover:bg-gray-100 transition-colors"
+              >
+                📊 <FormattedMessage id="details.chart.button" />
+              </button>
             </div>
           ))}
         </div>
@@ -162,6 +175,27 @@ export default function Details() {
           );
         })}
       </div>
+      {/* Modal gráfico por moeda */}
+      <Dialog.Root open={!!chartCurrency} onOpenChange={(open) => { if (!open) setChartCurrency(null); }}>
+        <Dialog.Portal>
+          <Dialog.Backdrop />
+          <Dialog.Popup className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 rounded-xl shadow-xl p-6 w-full max-w-2xl flex flex-col gap-4 outline-none">
+            <Dialog.Title className="text-base font-semibold">
+              {chartCurrency && `${getCurrencyFlag(chartCurrency)} ${chartCurrency}`}
+            </Dialog.Title>
+            {chartCurrency && (
+              <CurrencyChart
+                currency={chartCurrency}
+                incomings={(dataIncomings ?? []).filter((i) => (i.currency ?? "BRL") === chartCurrency)}
+                expenses={(dataExpenses ?? []).filter((e) => (e.currency ?? "BRL") === chartCurrency)}
+              />
+            )}
+            <div className="flex justify-end">
+              <Dialog.Close render={<Button variant="secondary"><FormattedMessage id="delete.dialog.cancel" /></Button>} />
+            </div>
+          </Dialog.Popup>
+        </Dialog.Portal>
+      </Dialog.Root>
     </>
   );
 }

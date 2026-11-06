@@ -1,9 +1,8 @@
 "use client";
 
 import { ExpenseForm, IncomingForm } from "@/app/components/forms";
+import { ArrowCircleLeftIcon } from "@/app/components/icons";
 import { Button } from "@awakr/awake-ui/button";
-import { ArrowCircleLeft } from "@mui/icons-material";
-import { Tooltip } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
@@ -13,7 +12,7 @@ type TransactionType = "incomings" | "expenses";
 
 interface TransactionFormPageProps {
   mode: "create" | "edit";
-  type?: TransactionType; // obrigatório no edit; ignorado no create
+  type?: TransactionType;
   id?: string;
   initialData?: Record<string, unknown>;
   redirectTo?: string;
@@ -49,14 +48,16 @@ export default function TransactionFormPage({
 
   return (
     <>
-      <Tooltip title={`${formatMessage({ id: "create.update.goToPrevious.button.tooltip" })}`} arrow placement="top">
-        <Button variant="secondary" onClick={() => router.back()} className="border w-auto! flex gap-1 mb-2">
-          <ArrowCircleLeft
-            className="cursor-pointer"
-          />
-          <FormattedMessage id="create.update.goToPrevious.button" />
-        </Button>
-      </Tooltip>
+      <Button
+        variant="secondary"
+        onClick={() => router.back()}
+        className="border w-auto! flex gap-1 mb-2"
+        title={formatMessage({ id: "create.update.goToPrevious.button.tooltip" })}
+      >
+        <ArrowCircleLeftIcon className="cursor-pointer" />
+        <FormattedMessage id="create.update.goToPrevious.button" />
+      </Button>
+
       {mode === "create" && (
         <nav aria-label={formatMessage({ id: "create.update.tab.nav.label" })}>
           <ul className="tabs" role="tablist">
@@ -88,7 +89,7 @@ export default function TransactionFormPage({
 
       <h1 className="title">
         <FormattedMessage id={titleId} />
-      </h1> 
+      </h1>
 
       {activeType === "incomings" ? (
         <IncomingForm

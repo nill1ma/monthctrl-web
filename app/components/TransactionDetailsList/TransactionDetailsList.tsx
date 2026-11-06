@@ -2,10 +2,9 @@
 
 import CardContainer from "@/app/components/card/card";
 import CardItem from "@/app/components/card/cardItem";
+import { DeleteForeverIcon, EditNoteIcon } from "@/app/components/icons";
 import { Dialog } from "@awakr/awake-ui/dialog";
 import { Button } from "@awakr/awake-ui/button";
-import { DeleteForever, EditNote } from "@mui/icons-material";
-import { Tooltip } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { useIntl } from "react-intl";
 import { useState } from "react";
@@ -69,18 +68,22 @@ export function TransactionDetailsList<T extends Transaction>({
               areaTextClassName="whitespace-nowrap overflow-scroll"
             >
               <div className="flex gap-1">
-                <Tooltip title={formatMessage({ id: type === "incomings" ? "details.edit.incoming.tooltip" : "details.edit.expense.tooltip" })}>
-                  <EditNote
-                    onClick={() => router.push(`/edit/${type}/${item.id}`)}
-                    className="cursor-pointer"
-                  />
-                </Tooltip>
-                <Tooltip title={formatMessage({ id: type === "incomings" ? "details.delete.incoming.tooltip" : "details.delete.expense.tooltip" })}>
-                  <DeleteForever
-                    onClick={() => setDeletingId(item.id)}
-                    className="cursor-pointer"
-                  />
-                </Tooltip>
+                <button
+                  type="button"
+                  title={formatMessage({ id: type === "incomings" ? "details.edit.incoming.tooltip" : "details.edit.expense.tooltip" })}
+                  onClick={() => router.push(`/edit/${type}/${item.id}`)}
+                  className="cursor-pointer"
+                >
+                  <EditNoteIcon />
+                </button>
+                <button
+                  type="button"
+                  title={formatMessage({ id: type === "incomings" ? "details.delete.incoming.tooltip" : "details.delete.expense.tooltip" })}
+                  onClick={() => setDeletingId(item.id)}
+                  className="cursor-pointer"
+                >
+                  <DeleteForeverIcon />
+                </button>
               </div>
             </CardItem>
           );

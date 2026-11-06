@@ -59,26 +59,52 @@ jest.mock('@/app/components/referenceDate/ReferenceDate', () => {
   };
 });
 
-// Mock icons
-jest.mock('@mui/material', () => ({
-  Tooltip: ({ children, title }: { children: React.ReactNode; title: string }) => <div title={title}>{children}</div>,
-}));
 
-jest.mock('@mui/icons-material', () => ({
-  ArrowCircleLeft: () => <div data-testid="arrow-back">Back</div>,
+
+jest.mock('@/app/components/icons', () => ({
+  ArrowCircleLeftIcon: () => <div data-testid="arrow-back">Back</div>,
+  FileDownloadIcon: () => <div data-testid="file-download" />,
+  Spinner: () => <div data-testid="spinner" />,
 }));
 
 // Mock router
+const mockPush = jest.fn();
 jest.mock('next/navigation', () => ({
   useParams: jest.fn(),
   useRouter: () => ({
-    push: jest.fn(),
+    push: mockPush,
   }),
 }));
 
 
 jest.mock('@/app/hooks/useExportPdf/useExportPdf', () => ({
-  useExportPdf: () => ({ exportPdf: jest.fn(), isExporting: false }),
+  useExportPdf: jest.fn(() => ({ exportPdf: jest.fn(), isExporting: false })),
+}));
+import { useExportPdf } from '@/app/hooks/useExportPdf/useExportPdf';
+
+jest.mock('@awakr/awake-ui/dialog', () => {
+  const React = jest.requireActual<typeof import('react')>('react');
+  const Ctx = React.createContext<{ open: boolean; onOpenChange: (v: boolean) => void }>({ open: false, onOpenChange: () => {} });
+  function Root({ open, onOpenChange, children }: { open: boolean; onOpenChange: (v: boolean) => void; children: React.ReactNode }) {
+    return <Ctx.Provider value={{ open, onOpenChange }}>{children}</Ctx.Provider>;
+  }
+  const Portal = ({ children }: { children: React.ReactNode }) => <>{children}</>;
+  const Backdrop = () => null;
+  const Popup = ({ children }: { children: React.ReactNode }) => {
+    const { open } = React.useContext(Ctx);
+    return open ? <div data-testid="chart-dialog">{children}</div> : null;
+  };
+  const Title = ({ children }: { children: React.ReactNode }) => <h2>{children}</h2>;
+  const Close = ({ render: renderEl }: { render: React.ReactElement<{ onClick?: () => void }> }) => {
+    const { onOpenChange } = React.useContext(Ctx);
+    return React.cloneElement(renderEl, { onClick: () => onOpenChange(false) });
+  };
+  return { Dialog: { Root, Portal, Backdrop, Popup, Title, Close } };
+});
+
+jest.mock('@/app/components/Chart/CurrencyChart/CurrencyChart', () => ({
+  __esModule: true,
+  default: () => <div data-testid="currency-chart" />,
 }));
 
 describe('Details Component', () => {
@@ -437,6 +463,72 @@ describe('Details Component', () => {
       // O mock de nível de módulo já está configurado; verifica apenas que o botão é clicável
       expect(screen.getByTestId('export-pdf-button')).not.toBeDisabled();
     });
+
+    it('renders Spinner instead of FileDownloadIcon when isExporting is true (line 79)', async () => {
+      (useExportPdf as jest.Mock).mockReturnValueOnce({ exportPdf: jest.fn(), isExporting: true });
+      (useIncomings as jest.Mock).mockReturnValue({ data: [], isLoading: false, deleteMutation: jest.fn() });
+      (useExpenses as jest.Mock).mockReturnValue({ data: [], isLoading: false, deleteMutation: jest.fn() });
+
+      render(<Details />);
+
+      await waitFor(() => {
+        expect(screen.getByTestId('spinner')).toBeInTheDocument();
+        expect(screen.queryByTestId('file-download')).not.toBeInTheDocument();
+      });
+    });
+  });
+
+  // ── Chart dialog (lines 132, 179-190) ────────────────────────────────────
+  describe('Chart dialog', () => {
+    const incomingsWithCurrency = [
+      { id: 1, reference: '01/2024', origin: 'Salary', value: 5000, currency: 'BRL' },
+    ];
+    const expensesWithCurrency = [
+      { id: 1, reference: '01/2024', destination: 'Rent', value: 1500, currency: 'BRL' },
+    ];
+
+    it('opens the chart dialog when the chart button is clicked (lines 132, 179-190)', async () => {
+      (useIncomings as jest.Mock).mockReturnValue({ data: incomingsWithCurrency, isLoading: false, deleteMutation: jest.fn() });
+      (useExpenses as jest.Mock).mockReturnValue({ data: expensesWithCurrency, isLoading: false, deleteMutation: jest.fn() });
+
+      render(<Details />);
+
+      // The chart button appears in the currency summary section
+      const chartBtn = await screen.findByRole('button', { name: /📊/ });
+      await userEvent.click(chartBtn);
+
+      await waitFor(() => {
+        expect(screen.getByTestId('chart-dialog')).toBeInTheDocument();
+        expect(screen.getByTestId('currency-chart')).toBeInTheDocument();
+      });
+    });
+
+    it('closes the chart dialog when the close button is clicked', async () => {
+      (useIncomings as jest.Mock).mockReturnValue({ data: incomingsWithCurrency, isLoading: false, deleteMutation: jest.fn() });
+      (useExpenses as jest.Mock).mockReturnValue({ data: expensesWithCurrency, isLoading: false, deleteMutation: jest.fn() });
+
+      render(<Details />);
+
+      const chartBtn = await screen.findByRole('button', { name: /📊/ });
+      await userEvent.click(chartBtn);
+
+      await waitFor(() => expect(screen.getByTestId('chart-dialog')).toBeInTheDocument());
+
+      await userEvent.click(screen.getByText('delete.dialog.cancel'));
+
+      await waitFor(() => {
+        expect(screen.queryByTestId('chart-dialog')).not.toBeInTheDocument();
+      });
+    });
+  });
+
+  it('navigates to /list when back button is clicked (line 79)', async () => {
+    (useIncomings as jest.Mock).mockReturnValue({ data: [], isLoading: false, deleteMutation: jest.fn() });
+    (useExpenses as jest.Mock).mockReturnValue({ data: [], isLoading: false, deleteMutation: jest.fn() });
+    mockPush.mockClear();
+    render(<Details />);
+    await userEvent.click(screen.getByTestId('arrow-back'));
+    expect(mockPush).toHaveBeenCalledWith('/list');
   });
 
 });
