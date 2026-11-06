@@ -14,6 +14,19 @@
   --color-border: #E0E1E6;
 }
 
+
+/* System dark mode preference — applied before JS runs */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --color-background: #000000;
+    --color-background-element: #212225;
+    --color-background-selected: #2E3135;
+    --color-text: #ffffff;
+    --color-text-secondary: #B0B4BA;
+    --color-border: #2E3135;
+  }
+}
+
 [data-theme="dark"] {
   --color-background: #000000;
   --color-background-element: #212225;

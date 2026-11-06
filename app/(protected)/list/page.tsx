@@ -9,8 +9,7 @@ import { useExchangeRates } from "@/app/hooks/useExchangeRates/useExchangeRates"
 import { useExportMenuPdf } from "@/app/hooks/useExportMenuPdf/useExportMenuPdf";
 import { ExportPdfModal } from "@/app/components/ExportPdfModal/ExportPdfModal";
 import Pagination from "@/app/components/ui/Pagination/Pagination";
-import { DeleteForever, FileDownload } from "@mui/icons-material";
-import { CircularProgress, Tooltip } from "@mui/material";
+import { DeleteForeverIcon, FileDownloadIcon, Spinner } from "@/app/components/icons";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useMemo, useRef, useState } from "react";
@@ -121,21 +120,20 @@ export default function List() {
 
       {/* Toolbar: seletor de moeda + botão export */}
       <div className="flex items-center justify-between px-1 gap-2">
-        <Tooltip title={formatMessage({ id: "list.export.tooltip" })} arrow placement="top">
-          <button
-            data-testid="export-pdf-button"
-            onClick={() => setExportModalOpen(true)}
-            disabled={isExporting}
-            className="flex items-center gap-1 text-sm px-3 py-1.5 rounded-lg border border-gray-300 hover:bg-gray-100 transition-colors disabled:opacity-50"
-          >
-            {isExporting ? (
-              <CircularProgress size={14} />
-            ) : (
-              <FileDownload fontSize="small" />
-            )}
-            {formatMessage({ id: "list.export.button" })}
-          </button>
-        </Tooltip>
+        <button
+          data-testid="export-pdf-button"
+          onClick={() => setExportModalOpen(true)}
+          disabled={isExporting}
+          title={formatMessage({ id: "list.export.tooltip" })}
+          className="flex items-center gap-1 text-sm px-3 py-1.5 rounded-lg border border-gray-300 hover:bg-gray-100 transition-colors disabled:opacity-50"
+        >
+          {isExporting ? (
+            <Spinner size={14} />
+          ) : (
+            <FileDownloadIcon />
+          )}
+          {formatMessage({ id: "list.export.button" })}
+        </button>
 
         <div className="w-44">
           <Autocomplete.Root
@@ -183,19 +181,17 @@ export default function List() {
               {group.reference}
             </Link>
 
-            <Tooltip
+            <button
+              type="button"
               title={formatMessage({ id: "list.deleteRef.tooltip" }, { reference: group.reference })}
-              arrow
-              placement="top"
+              className="cursor-pointer"
+              onClick={(e) => {
+                e.stopPropagation();
+                setDeletingRef(group.reference);
+              }}
             >
-              <DeleteForever
-                className="text-gray-400 hover:text-red-500 cursor-pointer transition-colors"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setDeletingRef(group.reference);
-                }}
-              />
-            </Tooltip>
+              <DeleteForeverIcon className="text-gray-400 hover:text-red-500 transition-colors" />
+            </button>
           </div>
 
           {/* Sub-linhas por moeda */}

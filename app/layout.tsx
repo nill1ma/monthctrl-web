@@ -10,7 +10,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html suppressHydrationWarning lang="en" className="h-full antialiased">
       <body>
-        <ReactQueryProvider>
+<ReactQueryProvider>
           <ThemeProvider>
             <I18nProvider>
               <Header />
