@@ -11,7 +11,6 @@ import { ExportPdfModal } from "@/app/components/ExportPdfModal/ExportPdfModal";
 import Pagination from "@/app/components/ui/Pagination/Pagination";
 import { DeleteForeverIcon, FileDownloadIcon, Spinner } from "@/app/components/icons";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { useIntl } from "react-intl";
 import { DeleteReferenceDialog } from "./DeleteReferenceDialog";
@@ -62,8 +61,6 @@ export default function List() {
   const { data, isLoading } = useIncomingsExpensesTransactionsList(currentPage);
   const { deleteByReferenceMutation: deleteIncomings } = useIncomings();
   const { deleteByReferenceMutation: deleteExpenses } = useExpenses();
-  const router = useRouter();
-
   const allCurrencies = useMemo(() => {
     if (!data?.data) return [];
     const set = new Set<string>();

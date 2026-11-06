@@ -15,7 +15,6 @@ type BarChartProps = {
 };
 
 export default function BarChartComponent({
-  id: _id,
   dataAxis,
   data,
   className,

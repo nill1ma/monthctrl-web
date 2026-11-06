@@ -69,7 +69,7 @@ export default function CurrencyChart({ currency, incomings, expenses }: Currenc
           width={80}
         />
         <Tooltip
-          formatter={(value: number) => formatValue(value, currency)}
+          formatter={(value) => formatValue(typeof value === 'number' ? value : 0, currency)}
           contentStyle={{ borderRadius: 8, fontSize: 12 }}
         />
         <Legend wrapperStyle={{ fontSize: 12 }} />

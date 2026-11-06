@@ -95,7 +95,7 @@ jest.mock('@awakr/awake-ui/dialog', () => {
     return open ? <div data-testid="chart-dialog">{children}</div> : null;
   };
   const Title = ({ children }: { children: React.ReactNode }) => <h2>{children}</h2>;
-  const Close = ({ render: renderEl }: { render: React.ReactElement }) => {
+  const Close = ({ render: renderEl }: { render: React.ReactElement<{ onClick?: () => void }> }) => {
     const { onOpenChange } = React.useContext(Ctx);
     return React.cloneElement(renderEl, { onClick: () => onOpenChange(false) });
   };
